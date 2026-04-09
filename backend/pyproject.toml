@@ -1,0 +1,14 @@
+[project]
+name = "dali-analyzer-backend"
+version = "0.1.0"
+description = "Backend for dali-sniffer analysis and visualization"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.135.3",
+    "uvicorn>=0.44.0",
+]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
