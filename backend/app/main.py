@@ -110,9 +110,10 @@ def home():
     <body>
         <div class="container">
             <h1>DALI Analyzer</h1>
+            <p style="margin-top: -8px; color: #6b7280;">PR cosmetic change preview</p>
 
             <h2>Backend status</h2>
-            <span class="status">Running</span>
+            <span class="status">Running (test branch)</span>
 
             <br>
             <button onclick="checkHealth()">Check /health</button>
