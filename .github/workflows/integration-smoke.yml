@@ -29,7 +29,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install frontend dependencies
-        run: npm ci
+        run: npm install --no-audit --no-fund
         working-directory: frontend
 
       - name: Build frontend
@@ -63,3 +63,4 @@ jobs:
         if: always()
         run: kill $(cat uvicorn.pid) || true
         working-directory: backend
+
