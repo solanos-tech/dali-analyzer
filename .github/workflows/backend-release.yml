@@ -3,7 +3,7 @@ name: Backend Release
 on:
   push:
     tags:
-      - "v*"
+      - "backend-v*"
 
 jobs:
   backend-release:
@@ -31,9 +31,6 @@ jobs:
 
       - name: Build package
         run: uv build
-
-      - name: List dist files
-        run: ls -la dist
 
       - name: Create GitHub release and upload assets
         env:

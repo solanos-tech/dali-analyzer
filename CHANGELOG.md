@@ -8,21 +8,18 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 
 ### Added
 
-- Added `agents.md` in English with collaboration rules and Definition of Done.
-- Added a structured documentation model:
-  - `docs/adr/`
-  - `docs/agent/`
-  - `docs/test/`
-  - `docs/tasks/`
-  - `docs/modules/`
-- Added ADR records:
-  - `docs/adr/ADR-0001-agent-documentation-structure.md`
-  - `docs/adr/ADR-0002-central-changelog.md`
-- Added agent operation docs, task templates, roadmap, and project register under `docs/`.
-- Added `.github/pull_request_template.md` in English.
-- Updated root `README.md` to English documentation links.
+- Added frontend-backend integration in React with API fetching, source switching, and 1-second live polling.
+- Added frontend API layer and config support via `VITE_API_BASE_URL` and `VITE_API_PROXY_TARGET`.
+- Added frontend CI workflow: `.github/workflows/frontend-ci.yml`.
+- Added integration smoke workflow: `.github/workflows/integration-smoke.yml`.
+- Added frontend deploy workflow: `.github/workflows/frontend-deploy.yml`.
+- Added frontend release workflow with `frontend-v*` tags: `.github/workflows/frontend-release.yml`.
+- Added ADR for mandatory branch/PR workflow: `docs/adr/ADR-0003-branch-pr-mandatory.md`.
 
 ### Changed
 
-- Migrated documentation and process content to English.
-- Reorganized docs to match agent-oriented repository structure.
+- Converted backend to API-only mode by removing embedded HTML UI routes.
+- Added explicit response model and CORS support in backend API.
+- Updated backend CI smoke checks to validate frames endpoint.
+- Updated backend release tags from `v*` to `backend-v*`.
+- Updated agent operating docs (`AGENTS.md`, `docs/agent/interrupt-flow.md`, `docs/tasks/task-template.md`) to enforce branch + PR flow.
