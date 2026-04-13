@@ -9,6 +9,6 @@ This repository is prepared for iterative human + AI collaboration.
 
 ## Documentation
 
-- [agents.md](agents.md) - collaboration rules, roles, and Definition of Done
+- [AGENTS.md](AGENTS.md) - agent runtime entrypoint and multi-agent operating guide
 - [docs/README.md](docs/README.md) - documentation map and structure
 - [CHANGELOG.md](CHANGELOG.md) - change history

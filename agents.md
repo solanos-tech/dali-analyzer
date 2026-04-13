@@ -1,71 +1,58 @@
-# Agent Collaboration Guide
+# Agent Operating Guide
 
-This file defines the collaboration standard for AI and human contributors in `dali-analyzer`.
+This is the single runtime entrypoint for agent and multi-agent work in this repository.
 
-## 1. Purpose
+## Latest Accepted Decisions (Read First)
 
-- Keep change quality high in short delivery cycles.
-- Make task handoff easy without losing context.
-- Reduce regression risk through explicit checklists and logs.
+- `docs/adr/ADR-0001-agent-documentation-structure.md`
+- `docs/adr/ADR-0002-central-changelog.md`
 
-## 2. Roles and Responsibility
+## Build and Verification
 
-- `Owner`: defines priorities, approves scope, closes tasks.
-- `Implementer`: delivers code and documentation changes.
-- `Reviewer`: checks risks, regressions, test coverage, and architecture fit.
-- `Release Agent`: owns versioning, changelog quality, and release flow.
+Run these before handoff or PR:
 
-One person or one agent can hold multiple roles, but roles must be explicit in the task or PR.
+```powershell
+cd backend
+uv run ruff check .
+uv run pytest
+uv run mypy app
+```
 
-## 3. Task Contract
+Optional local run:
 
-Each task should include:
+```powershell
+cd backend
+uv sync
+uv run uvicorn app.main:app --reload
+```
 
-- Business or technical objective (1-2 sentences).
-- In-scope and out-of-scope definition.
-- Acceptance criteria.
-- Test plan (manual plus automated).
-- Risk assessment and rollback plan.
+## Safety and Invariants
 
-## 4. Definition of Done
+- Do not break existing API behavior without updating docs and consumers.
+- Keep CI and release workflows deterministic.
+- Keep edits scoped to the active task; avoid unrelated refactors.
+- Update `CHANGELOG.md` for material changes.
 
-A change is done when:
+## Multi-Agent Working Contract
 
-- Code works locally.
-- Checks pass (`ruff`, `pytest`, `mypy` for backend).
-- Documentation is updated (`docs/` and `CHANGELOG.md`).
-- Key decisions and risks are documented.
-- Project status is updated.
+- Assign explicit ownership per task and file area.
+- Use short task leases to avoid edit collisions.
+- If blocked, hand off with `done`, `remaining`, `risks`, and `reproduction steps`.
+- Do not duplicate work already delegated to another agent.
 
-## 5. Workflow
+## Active Work Sources
 
-1. Pick a task from `docs/tasks/projects.md`.
-2. Confirm scope and acceptance criteria.
-3. Implement on a working branch.
-4. Validate locally.
-5. Update documentation and changelog.
-6. Review and merge.
+- Project status: `docs/tasks/projects.md`
+- Roadmap: `docs/tasks/roadmap.md`
+- Task template: `docs/tasks/task-template.md`
+- Handoff template: `docs/tasks/handoff-template.md`
 
-## 6. Minimum PR Checklist
+## Where Agents Should Read Next
 
-- [ ] Scope matches the task objective.
-- [ ] No accidental or unrelated changes.
-- [ ] Tests pass locally or in CI.
-- [ ] Documentation and changelog are updated.
-- [ ] Risks and decisions are documented.
-
-## 7. Handoff Convention
-
-When handing work over, include:
-
-- What is done.
-- What is still open.
-- How to reproduce locally.
-- Known risks and blockers.
-
-## 8. Task Priority
-
-- `P0`: Blocks production or release.
-- `P1`: High impact, no workaround.
-- `P2`: Standard product development.
-- `P3`: Improvements and cleanup.
+- `docs/agent/repo-map.md`
+- `docs/agent/edit-boundaries.md`
+- `docs/agent/build-runbook.md`
+- `docs/agent/interrupt-flow.md`
+- `docs/agent/feature-flags.md`
+- `docs/test/README.md`
+- `docs/test/checklist.md`
