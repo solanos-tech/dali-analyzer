@@ -102,4 +102,19 @@ jobs:
         run: pip install downloaded-dist/*.whl
 
       - name: Verify import
-        run: python -c "import app.main; print('Import OK')"   
+        run: python -c "import app.main; print('Import OK')"
+
+      - name: Start API from built wheel
+        run: |
+          uvicorn app.main:app --host 127.0.0.1 --port 8000 &
+          echo $! > uvicorn.pid
+          sleep 5
+
+      - name: Call health endpoint
+        run: |
+          curl --fail http://127.0.0.1:8000/health
+
+      - name: Stop API
+        if: always()
+        run: |
+          kill $(cat uvicorn.pid) || true
