@@ -35,3 +35,4 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 - Updated agent docs to enforce synchronized backend/frontend version bumps and strict release tag patterns.
 - Updated agent docs and templates to require post-merge and post-release knowledge/decision logging.
 - Updated root/backend/frontend README files with clearer run instructions and automatic logging behavior.
+- Bumped release versions for backend/frontend to `0.1.7`.
