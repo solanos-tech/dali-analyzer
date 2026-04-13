@@ -77,3 +77,18 @@ jobs:
         with:
           name: backend-dist
           path: backend/dist        
+
+  backend-package-inspect:
+    runs-on: ubuntu-latest
+    needs: backend-build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-dist
+          path: downloaded-dist
+
+      - name: List downloaded files
+        run: ls -la downloaded-dist          
