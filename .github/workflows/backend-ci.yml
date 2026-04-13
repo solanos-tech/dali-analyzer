@@ -19,11 +19,11 @@ jobs:
         working-directory: backend
 
     steps:
-      - name: Print event type
-        run: echo "Event:${{ github.event_name }}"
-
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Print event type
+        run: echo "Event:${{ github.event_name }}"
 
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
