@@ -67,4 +67,4 @@ jobs:
         run: uv sync
 
       - name: Build placeholder
-        run: echo "This is where backend build/package step will go"
+        run: echo "This is where backend build/package step will go "
