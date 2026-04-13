@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query
+﻿from fastapi import FastAPI, Query
 from fastapi.responses import HTMLResponse
 
 import threading
@@ -29,7 +29,7 @@ def get_mock_frames() -> list[dict]:
 
 
 def get_serial_frames() -> list[dict]:
-    # placeholder – symulacja "live" danych
+    # placeholder - simulated "live" data
     commands = ["ON", "OFF", "DIM 25%", "DIM 50%", "DIM 75%", "QUERY"]
     addresses = ["0x01", "0x02", "0x03", "0x0A"]
 
@@ -194,7 +194,7 @@ def frames_page():
     <body>
         <div class="container">
 
-            <a href="/">← Back</a>
+            <a href="/">â† Back</a>
 
             <h1>Frames Viewer</h1>
 
