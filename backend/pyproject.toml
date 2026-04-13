@@ -9,6 +9,9 @@ dependencies = [
     "uvicorn>=0.44.0",
 ]
 
+[project.scripts]
+dali-analyzer = "app.main:run"
+
 [build-system]
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
