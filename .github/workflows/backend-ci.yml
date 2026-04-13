@@ -66,5 +66,8 @@ jobs:
       - name: Sync dependencies
         run: uv sync
 
-      - name: Build placeholder
-        run: echo "This is where backend build/package step will go "
+      - name: Build package
+        run: uv build
+
+      - name: List dist files
+        run: ls -la dist
