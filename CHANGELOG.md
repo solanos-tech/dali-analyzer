@@ -15,6 +15,8 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 - Added frontend deploy workflow: `.github/workflows/frontend-deploy.yml`.
 - Added frontend release workflow with `frontend-v*` tags: `.github/workflows/frontend-release.yml`.
 - Added ADR for mandatory branch/PR workflow: `docs/adr/ADR-0003-branch-pr-mandatory.md`.
+- Added release/versioning ADR: `docs/adr/ADR-0004-release-versioning-policy.md`.
+- Added agent release/versioning policy doc: `docs/agent/release-versioning.md`.
 
 ### Changed
 
@@ -23,3 +25,4 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 - Updated backend CI smoke checks to validate frames endpoint.
 - Updated backend release tags from `v*` to `backend-v*`.
 - Updated agent operating docs (`AGENTS.md`, `docs/agent/interrupt-flow.md`, `docs/tasks/task-template.md`) to enforce branch + PR flow.
+- Updated agent docs to enforce synchronized backend/frontend version bumps and strict release tag patterns.
