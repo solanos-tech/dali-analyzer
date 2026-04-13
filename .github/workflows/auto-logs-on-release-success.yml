@@ -46,28 +46,26 @@ jobs:
             exit 0
           fi
 
-          cat >> docs/agent/knowledge-log.md <<EOF
+          {
+            printf '\n- Date (UTC): %s\n' "${DATE_UTC}"
+            printf -- '- Event key: %s\n' "${EVENT_KEY}"
+            printf -- '- Trigger: successful release workflow\n'
+            printf -- '- What changed: %s completed successfully\n' "${WORKFLOW_NAME}"
+            printf -- '- What improved: release cycle executed end-to-end with traceable outcome\n'
+            printf -- '- What failed or caused friction: none recorded by automation\n'
+            printf -- '- Recommendation for next cycle: keep version bumps and tags aligned with release workflows\n'
+            printf -- '- Related links: %s, commit %s, ref %s\n' "${WORKFLOW_URL}" "${HEAD_SHA}" "${RESOLVED_REF}"
+          } >> docs/agent/knowledge-log.md
 
-- Date (UTC): ${DATE_UTC}
-- Event key: ${EVENT_KEY}
-- Trigger: successful release workflow
-- What changed: ${WORKFLOW_NAME} completed successfully
-- What improved: release cycle executed end-to-end with traceable outcome
-- What failed or caused friction: none recorded by automation
-- Recommendation for next cycle: keep version bumps and tags aligned with release workflows
-- Related links: ${WORKFLOW_URL}, commit ${HEAD_SHA}, ref ${RESOLVED_REF}
-EOF
-
-          cat >> docs/agent/decision-log.md <<EOF
-
-- Date (UTC): ${DATE_UTC}
-- Event key: ${EVENT_KEY}
-- Trigger: successful release workflow
-- Decision: preserve current release tag policy and continue post-release logging
-- Rationale: successful release events should leave decision traces for future cycles
-- Impact: improves reproducibility and release diagnostics
-- Related links: workflow ${WORKFLOW_NAME} (${WORKFLOW_URL})
-EOF
+          {
+            printf '\n- Date (UTC): %s\n' "${DATE_UTC}"
+            printf -- '- Event key: %s\n' "${EVENT_KEY}"
+            printf -- '- Trigger: successful release workflow\n'
+            printf -- '- Decision: preserve current release tag policy and continue post-release logging\n'
+            printf -- '- Rationale: successful release events should leave decision traces for future cycles\n'
+            printf -- '- Impact: improves reproducibility and release diagnostics\n'
+            printf -- '- Related links: workflow %s (%s)\n' "${WORKFLOW_NAME}" "${WORKFLOW_URL}"
+          } >> docs/agent/decision-log.md
 
           echo "changed=true" >> "$GITHUB_OUTPUT"
 

@@ -43,28 +43,26 @@ jobs:
             exit 0
           fi
 
-          cat >> docs/agent/knowledge-log.md <<EOF
+          {
+            printf '\n- Date (UTC): %s\n' "${DATE_UTC}"
+            printf -- '- Event key: %s\n' "${EVENT_KEY}"
+            printf -- '- Trigger: merged pull request\n'
+            printf -- '- What changed: PR #%s merged to main\n' "${PR_NUMBER}"
+            printf -- '- What improved: New increment was integrated and validated through review workflow\n'
+            printf -- '- What failed or caused friction: none recorded by automation\n'
+            printf -- '- Recommendation for next cycle: keep docs and release metadata updated in the same cycle\n'
+            printf -- '- Related links: %s, commit %s\n' "${PR_URL}" "${MERGE_SHA}"
+          } >> docs/agent/knowledge-log.md
 
-- Date (UTC): ${DATE_UTC}
-- Event key: ${EVENT_KEY}
-- Trigger: merged pull request
-- What changed: PR #${PR_NUMBER} merged to main
-- What improved: New increment was integrated and validated through review workflow
-- What failed or caused friction: none recorded by automation
-- Recommendation for next cycle: keep docs and release metadata updated in the same cycle
-- Related links: ${PR_URL}, commit ${MERGE_SHA}
-EOF
-
-          cat >> docs/agent/decision-log.md <<EOF
-
-- Date (UTC): ${DATE_UTC}
-- Event key: ${EVENT_KEY}
-- Trigger: merged pull request
-- Decision: retain branch+PR workflow and create post-merge knowledge artifacts
-- Rationale: merged increments should leave audit-ready operational traces
-- Impact: improves repository memory and onboarding continuity
-- Related links: PR #${PR_NUMBER} (${PR_TITLE}) by @${PR_AUTHOR} - ${PR_URL}
-EOF
+          {
+            printf '\n- Date (UTC): %s\n' "${DATE_UTC}"
+            printf -- '- Event key: %s\n' "${EVENT_KEY}"
+            printf -- '- Trigger: merged pull request\n'
+            printf -- '- Decision: retain branch+PR workflow and create post-merge knowledge artifacts\n'
+            printf -- '- Rationale: merged increments should leave audit-ready operational traces\n'
+            printf -- '- Impact: improves repository memory and onboarding continuity\n'
+            printf -- '- Related links: PR #%s (%s) by @%s - %s\n' "${PR_NUMBER}" "${PR_TITLE}" "${PR_AUTHOR}" "${PR_URL}"
+          } >> docs/agent/decision-log.md
 
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
