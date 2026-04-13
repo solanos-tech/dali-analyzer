@@ -42,3 +42,7 @@ jobs:
 
       - name: Mypy
         run: uv run mypy app
+
+      - name: Only on main branch
+        if: github.ref == 'refs/heads/main'
+        run: echo "Running on main branch"        
