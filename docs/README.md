@@ -16,3 +16,4 @@ This repository uses an agent-oriented documentation layout.
 - Update `docs/tasks/projects.md` when project status changes.
 - Add new decisions as ADR files in `docs/adr/`.
 - Update `CHANGELOG.md` for material process or product changes.
+- Keep operational traces in `docs/agent/knowledge-log.md` and `docs/agent/decision-log.md`.

@@ -8,3 +8,5 @@ Operational guidance for agent and human contributors:
 - [feature-flags.md](feature-flags.md)
 - [interrupt-flow.md](interrupt-flow.md)
 - [release-versioning.md](release-versioning.md)
+- [knowledge-log.md](knowledge-log.md)
+- [decision-log.md](decision-log.md)

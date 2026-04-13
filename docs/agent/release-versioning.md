@@ -45,3 +45,6 @@ Invalid release tags (do not trigger expected workflows):
    - `backend-vX.Y.Z`
    - `frontend-vX.Y.Z`
 6. Verify release workflows completed successfully.
+7. Ensure follow-up docs PR is generated for:
+   - `docs/agent/knowledge-log.md`
+   - `docs/agent/decision-log.md`

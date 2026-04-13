@@ -1,0 +1,90 @@
+name: Auto Logs on PR Merge
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-logs-pr-merge:
+    if: >
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'main' &&
+      !startsWith(github.event.pull_request.head.ref, 'codex/auto-logs-')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Update knowledge and decision logs
+        id: update_logs
+        shell: bash
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          set -euo pipefail
+
+          EVENT_KEY="pr-${PR_NUMBER}-${MERGE_SHA}"
+          DATE_UTC="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+
+          if grep -q "${EVENT_KEY}" docs/agent/knowledge-log.md || grep -q "${EVENT_KEY}" docs/agent/decision-log.md; then
+            echo "No-op: event already logged."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          cat >> docs/agent/knowledge-log.md <<EOF
+
+- Date (UTC): ${DATE_UTC}
+- Event key: ${EVENT_KEY}
+- Trigger: merged pull request
+- What changed: PR #${PR_NUMBER} merged to main
+- What improved: New increment was integrated and validated through review workflow
+- What failed or caused friction: none recorded by automation
+- Recommendation for next cycle: keep docs and release metadata updated in the same cycle
+- Related links: ${PR_URL}, commit ${MERGE_SHA}
+EOF
+
+          cat >> docs/agent/decision-log.md <<EOF
+
+- Date (UTC): ${DATE_UTC}
+- Event key: ${EVENT_KEY}
+- Trigger: merged pull request
+- Decision: retain branch+PR workflow and create post-merge knowledge artifacts
+- Rationale: merged increments should leave audit-ready operational traces
+- Impact: improves repository memory and onboarding continuity
+- Related links: PR #${PR_NUMBER} (${PR_TITLE}) by @${PR_AUTHOR} - ${PR_URL}
+EOF
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Create follow-up docs PR
+        if: steps.update_logs.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "docs: auto-update logs after merge of PR #${{ github.event.pull_request.number }}"
+          title: "docs: auto logs after PR #${{ github.event.pull_request.number }} merge"
+          body: |
+            Automated follow-up docs PR generated after merge of PR #${{ github.event.pull_request.number }}.
+
+            Updates:
+            - `docs/agent/knowledge-log.md`
+            - `docs/agent/decision-log.md`
+
+            Event key: `pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.merge_commit_sha }}`
+          branch: codex/auto-logs-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}
+          delete-branch: true
+          labels: |
+            documentation
+            automation

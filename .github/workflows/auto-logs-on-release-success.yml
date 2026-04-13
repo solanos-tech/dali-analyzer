@@ -1,0 +1,95 @@
+name: Auto Logs on Release Success
+
+on:
+  workflow_run:
+    workflows:
+      - Backend Release
+      - Frontend Release
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-logs-release:
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      !startsWith(github.event.workflow_run.head_branch || '', 'codex/auto-logs-')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Update knowledge and decision logs
+        id: update_logs
+        shell: bash
+        env:
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+          WORKFLOW_URL: ${{ github.event.workflow_run.html_url }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          set -euo pipefail
+
+          EVENT_KEY="release-${RUN_ID}-${HEAD_SHA}"
+          DATE_UTC="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          RESOLVED_REF="${HEAD_BRANCH:-tag-or-detached}"
+
+          if grep -q "${EVENT_KEY}" docs/agent/knowledge-log.md || grep -q "${EVENT_KEY}" docs/agent/decision-log.md; then
+            echo "No-op: release event already logged."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          cat >> docs/agent/knowledge-log.md <<EOF
+
+- Date (UTC): ${DATE_UTC}
+- Event key: ${EVENT_KEY}
+- Trigger: successful release workflow
+- What changed: ${WORKFLOW_NAME} completed successfully
+- What improved: release cycle executed end-to-end with traceable outcome
+- What failed or caused friction: none recorded by automation
+- Recommendation for next cycle: keep version bumps and tags aligned with release workflows
+- Related links: ${WORKFLOW_URL}, commit ${HEAD_SHA}, ref ${RESOLVED_REF}
+EOF
+
+          cat >> docs/agent/decision-log.md <<EOF
+
+- Date (UTC): ${DATE_UTC}
+- Event key: ${EVENT_KEY}
+- Trigger: successful release workflow
+- Decision: preserve current release tag policy and continue post-release logging
+- Rationale: successful release events should leave decision traces for future cycles
+- Impact: improves reproducibility and release diagnostics
+- Related links: workflow ${WORKFLOW_NAME} (${WORKFLOW_URL})
+EOF
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Create follow-up docs PR
+        if: steps.update_logs.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "docs: auto-update logs after successful release workflow run ${{ github.event.workflow_run.id }}"
+          title: "docs: auto logs after successful release workflow"
+          body: |
+            Automated follow-up docs PR generated after successful release workflow completion.
+
+            Workflow: `${{ github.event.workflow_run.name }}`
+            Run: `${{ github.event.workflow_run.id }}`
+            URL: ${{ github.event.workflow_run.html_url }}
+
+            Updates:
+            - `docs/agent/knowledge-log.md`
+            - `docs/agent/decision-log.md`
+          branch: codex/auto-logs-release-${{ github.event.workflow_run.id }}
+          delete-branch: true
+          labels: |
+            documentation
+            automation
