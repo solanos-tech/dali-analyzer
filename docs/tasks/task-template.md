@@ -8,6 +8,8 @@
 - Implementer:
 - Reviewer:
 - Priority (P0-P3):
+- Target branch name:
+- PR title:
 
 ## Objective
 
@@ -32,6 +34,13 @@ Describe the business or technical outcome in 1-2 sentences.
 
 - Automated tests:
 - Manual checks:
+
+## PR Acceptance Checklist
+
+- [ ] Branch created before implementation
+- [ ] Changes validated locally
+- [ ] PR opened and linked to task
+- [ ] Docs/changelog updated if required
 
 ## Risk and Rollback
 

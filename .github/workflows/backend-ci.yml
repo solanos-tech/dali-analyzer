@@ -23,9 +23,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Print event type
-        run: 'echo "Event: ${{ github.event_name }}" || true'
-
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
 
@@ -69,14 +66,11 @@ jobs:
       - name: Build package
         run: uv build
 
-      - name: List dist files
-        run: ls -la dist
-    
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: backend-dist
-          path: backend/dist        
+          path: backend/dist
 
   backend-package-inspect:
     runs-on: ubuntu-latest
@@ -90,9 +84,6 @@ jobs:
           name: backend-dist
           path: downloaded-dist
 
-      - name: List downloaded files
-        run: ls -la downloaded-dist
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -101,9 +92,6 @@ jobs:
       - name: Install built wheel
         run: pip install downloaded-dist/*.whl
 
-      - name: Verify import
-        run: python -c "import app.main; print('Import OK')"
-
       - name: Start API from built wheel
         run: |
           uvicorn app.main:app --host 127.0.0.1 --port 8000 &
@@ -111,13 +99,14 @@ jobs:
           sleep 5
 
       - name: Call health endpoint
-        run: |
-          curl --fail http://127.0.0.1:8000/health
+        run: curl --fail http://127.0.0.1:8000/health
+
+      - name: Call frames endpoint
+        run: curl --fail "http://127.0.0.1:8000/api/frames?source=mock"
 
       - name: Stop API
         if: always()
-        run: |
-          kill $(cat uvicorn.pid) || true
+        run: kill $(cat uvicorn.pid) || true
 
   backend-deploy:
     runs-on: ubuntu-latest
@@ -126,20 +115,11 @@ jobs:
     environment: prod
 
     steps:
-      - name: Print deployment target
-        run: echo "Deploying backend artifact to prod environment"
-
-      - name: Print deployment revision
-        run: echo "Deploying revision ${{ github.sha }}"
-
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
           name: backend-dist
           path: deployed-dist
-
-      - name: List deployment files
-        run: ls -la deployed-dist
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -158,9 +138,8 @@ jobs:
       - name: Smoke test deployed API
         run: |
           curl --fail http://127.0.0.1:8001/health
+          curl --fail "http://127.0.0.1:8001/api/frames?source=serial"
 
       - name: Stop deployed API
         if: always()
-        run: |
-          kill $(cat uvicorn.pid) || true
-          
+        run: kill $(cat uvicorn.pid) || true

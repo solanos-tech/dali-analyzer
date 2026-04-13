@@ -6,6 +6,18 @@ This is the single runtime entrypoint for agent and multi-agent work in this rep
 
 - `docs/adr/ADR-0001-agent-documentation-structure.md`
 - `docs/adr/ADR-0002-central-changelog.md`
+- `docs/adr/ADR-0003-branch-pr-mandatory.md`
+
+## Branch and PR Rule (Mandatory)
+
+For every new functionality or material change:
+
+1. Ask the user whether to create a branch and PR.
+2. After confirmation, always create a branch.
+3. Implement only on that branch.
+4. Commit, push, and open a PR.
+
+Direct-to-main changes are not allowed.
 
 ## Build and Verification
 
@@ -18,12 +30,24 @@ uv run pytest
 uv run mypy app
 ```
 
+```powershell
+cd frontend
+npm ci
+npm run lint
+npm run build
+```
+
 Optional local run:
 
 ```powershell
 cd backend
 uv sync
 uv run uvicorn app.main:app --reload
+```
+
+```powershell
+cd frontend
+npm run dev
 ```
 
 ## Safety and Invariants
