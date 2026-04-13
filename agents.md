@@ -7,6 +7,7 @@ This is the single runtime entrypoint for agent and multi-agent work in this rep
 - `docs/adr/ADR-0001-agent-documentation-structure.md`
 - `docs/adr/ADR-0002-central-changelog.md`
 - `docs/adr/ADR-0003-branch-pr-mandatory.md`
+- `docs/adr/ADR-0004-release-versioning-policy.md`
 
 ## Branch and PR Rule (Mandatory)
 
@@ -18,6 +19,21 @@ For every new functionality or material change:
 4. Commit, push, and open a PR.
 
 Direct-to-main changes are not allowed.
+
+## Versioning, Tagging, and Release Rule (Mandatory)
+
+For every release candidate or release-related change:
+
+1. Update backend version in `backend/pyproject.toml` (`[project].version`).
+2. Update frontend version in `frontend/package.json` (`version`).
+3. Keep both versions aligned unless the user explicitly asks for separate version lines.
+4. Update `CHANGELOG.md` with release notes before tagging.
+5. Use release tags that match workflows exactly:
+   - Backend release tag: `backend-vX.Y.Z`
+   - Frontend release tag: `frontend-vX.Y.Z`
+   - Optional informational tag: `vX.Y.Z` (does not trigger release workflows)
+
+Tags not matching these patterns are invalid for release automation.
 
 ## Build and Verification
 
@@ -78,5 +94,6 @@ npm run dev
 - `docs/agent/build-runbook.md`
 - `docs/agent/interrupt-flow.md`
 - `docs/agent/feature-flags.md`
+- `docs/agent/release-versioning.md`
 - `docs/test/README.md`
 - `docs/test/checklist.md`

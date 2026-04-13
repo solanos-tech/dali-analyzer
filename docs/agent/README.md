@@ -7,3 +7,4 @@ Operational guidance for agent and human contributors:
 - [edit-boundaries.md](edit-boundaries.md)
 - [feature-flags.md](feature-flags.md)
 - [interrupt-flow.md](interrupt-flow.md)
+- [release-versioning.md](release-versioning.md)

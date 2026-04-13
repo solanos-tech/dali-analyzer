@@ -10,6 +10,7 @@
 - Priority (P0-P3):
 - Target branch name:
 - PR title:
+- Target release version (X.Y.Z):
 
 ## Objective
 
@@ -41,6 +42,9 @@ Describe the business or technical outcome in 1-2 sentences.
 - [ ] Changes validated locally
 - [ ] PR opened and linked to task
 - [ ] Docs/changelog updated if required
+- [ ] `backend/pyproject.toml` version updated (if release-related)
+- [ ] `frontend/package.json` version updated (if release-related)
+- [ ] Tag plan uses valid release patterns (`backend-vX.Y.Z`, `frontend-vX.Y.Z`)
 
 ## Risk and Rollback
 
