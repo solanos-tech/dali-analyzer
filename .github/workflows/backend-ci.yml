@@ -123,11 +123,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: backend-package-inspect
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    environment: dev
+    environment: prod
 
     steps:
       - name: Print deployment target
-        run: echo "Deploying backend artifact to dev environment"
+        run: echo "Deploying backend artifact to prod environment"
 
       - name: Print deployment revision
         run: echo "Deploying revision ${{ github.sha }}"
@@ -149,7 +149,7 @@ jobs:
       - name: Install deployed wheel
         run: pip install deployed-dist/*.whl
 
-      - name: Start deployed API
+      - name: Start deployed API (prod simulation)
         run: |
           uvicorn app.main:app --host 127.0.0.1 --port 8001 &
           echo $! > uvicorn.pid
@@ -162,4 +162,4 @@ jobs:
       - name: Stop deployed API
         if: always()
         run: |
-          kill $(cat uvicorn.pid) || true   
+          kill $(cat uvicorn.pid) || true
