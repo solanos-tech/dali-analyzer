@@ -45,6 +45,9 @@ Describe the business or technical outcome in 1-2 sentences.
 - [ ] `backend/pyproject.toml` version updated (if release-related)
 - [ ] `frontend/package.json` version updated (if release-related)
 - [ ] Tag plan uses valid release patterns (`backend-vX.Y.Z`, `frontend-vX.Y.Z`)
+- [ ] Knowledge log update prepared (`docs/agent/knowledge-log.md`)
+- [ ] Decision log update prepared (`docs/agent/decision-log.md`)
+- [ ] Follow-up docs PR created or linked (if merge/release cycle completed)
 
 ## Risk and Rollback
 

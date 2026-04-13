@@ -2,12 +2,14 @@
 
 React + Vite frontend for DALI frames monitoring.
 
-## Run locally
+## Run Frontend Locally
 
 ```powershell
-npm ci
+npm install --no-audit --no-fund
 npm run dev
 ```
+
+UI URL: `http://127.0.0.1:5173`
 
 ## Build and lint
 
@@ -20,3 +22,9 @@ npm run build
 
 - `VITE_API_BASE_URL` optional API base URL
 - `VITE_API_PROXY_TARGET` dev proxy target (default `http://127.0.0.1:8000`)
+
+## Version and Release
+
+- Source of frontend version: `frontend/package.json` (`version`)
+- Release tag pattern: `frontend-vX.Y.Z`
+- Successful release workflow should be followed by auto-log docs PR updates.

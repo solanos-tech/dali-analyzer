@@ -13,6 +13,16 @@ For all new functionality and material changes:
 
 No direct work on `main` is allowed.
 
+## Learning and Decision Log Protocol
+
+After each merged PR and after each successful release workflow:
+
+1. Record lessons learned in `docs/agent/knowledge-log.md`.
+2. Record operational decisions in `docs/agent/decision-log.md`.
+3. Submit updates as a docs-only follow-up PR.
+
+Direct log updates to `main` are not allowed.
+
 ## Required Handoff Fields
 
 - Task ID

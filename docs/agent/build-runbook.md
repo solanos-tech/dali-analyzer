@@ -39,6 +39,6 @@ Build artifacts are generated in `backend/dist/`.
 
 ```powershell
 cd frontend
-npm ci
+npm install --no-audit --no-fund
 npm run dev
 ```

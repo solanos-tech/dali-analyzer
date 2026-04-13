@@ -17,6 +17,13 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 - Added ADR for mandatory branch/PR workflow: `docs/adr/ADR-0003-branch-pr-mandatory.md`.
 - Added release/versioning ADR: `docs/adr/ADR-0004-release-versioning-policy.md`.
 - Added agent release/versioning policy doc: `docs/agent/release-versioning.md`.
+- Added agent learning-loop ADR: `docs/adr/ADR-0005-agent-learning-loop.md`.
+- Added operational logs:
+  - `docs/agent/knowledge-log.md`
+  - `docs/agent/decision-log.md`
+- Added automation workflows:
+  - `.github/workflows/auto-logs-on-pr-merge.yml`
+  - `.github/workflows/auto-logs-on-release-success.yml`
 
 ### Changed
 
@@ -26,3 +33,5 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 - Updated backend release tags from `v*` to `backend-v*`.
 - Updated agent operating docs (`AGENTS.md`, `docs/agent/interrupt-flow.md`, `docs/tasks/task-template.md`) to enforce branch + PR flow.
 - Updated agent docs to enforce synchronized backend/frontend version bumps and strict release tag patterns.
+- Updated agent docs and templates to require post-merge and post-release knowledge/decision logging.
+- Updated root/backend/frontend README files with clearer run instructions and automatic logging behavior.

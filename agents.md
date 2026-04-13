@@ -8,6 +8,7 @@ This is the single runtime entrypoint for agent and multi-agent work in this rep
 - `docs/adr/ADR-0002-central-changelog.md`
 - `docs/adr/ADR-0003-branch-pr-mandatory.md`
 - `docs/adr/ADR-0004-release-versioning-policy.md`
+- `docs/adr/ADR-0005-agent-learning-loop.md`
 
 ## Branch and PR Rule (Mandatory)
 
@@ -48,7 +49,7 @@ uv run mypy app
 
 ```powershell
 cd frontend
-npm ci
+npm install --no-audit --no-fund
 npm run lint
 npm run build
 ```
@@ -72,6 +73,7 @@ npm run dev
 - Keep CI and release workflows deterministic.
 - Keep edits scoped to the active task; avoid unrelated refactors.
 - Update `CHANGELOG.md` for material changes.
+- After each merged PR and successful release workflow, update knowledge and decision logs through an auto-generated docs PR.
 
 ## Multi-Agent Working Contract
 
@@ -95,5 +97,7 @@ npm run dev
 - `docs/agent/interrupt-flow.md`
 - `docs/agent/feature-flags.md`
 - `docs/agent/release-versioning.md`
+- `docs/agent/knowledge-log.md`
+- `docs/agent/decision-log.md`
 - `docs/test/README.md`
 - `docs/test/checklist.md`
