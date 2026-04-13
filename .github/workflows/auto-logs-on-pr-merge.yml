@@ -71,7 +71,9 @@ jobs:
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - name: Create follow-up docs PR
+        id: create_pr
         if: steps.update_logs.outputs.changed == 'true'
+        continue-on-error: true
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -90,3 +92,10 @@ jobs:
           labels: |
             documentation
             automation
+
+      - name: Warn when follow-up PR could not be created
+        if: steps.update_logs.outputs.changed == 'true' && steps.create_pr.outcome == 'failure'
+        shell: bash
+        run: |
+          echo "::warning::Auto-log entries were generated, but creating the follow-up PR failed."
+          echo "::warning::Check repository settings for GitHub Actions pull request permissions."
