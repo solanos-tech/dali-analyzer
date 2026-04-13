@@ -3,6 +3,10 @@ name: Auto Logs on PR Merge
 on:
   pull_request:
     types: [closed]
+  push:
+    paths:
+      - ".github/workflows/auto-logs-on-pr-merge.yml"
+  workflow_dispatch:
 
 permissions:
   contents: write

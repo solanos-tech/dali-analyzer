@@ -6,6 +6,10 @@ on:
       - Backend Release
       - Frontend Release
     types: [completed]
+  push:
+    paths:
+      - ".github/workflows/auto-logs-on-release-success.yml"
+  workflow_dispatch:
 
 permissions:
   contents: write
