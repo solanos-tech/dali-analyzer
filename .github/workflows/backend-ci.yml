@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Print event type
-        run: echo "Event: ${{ github.event_name }}"
+        run: 'echo "Event: ${{ github.event_name }}" || true'
 
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
