@@ -18,6 +18,13 @@ type FilterState = {
 const DEFAULT_LOG = 'sniffer_log_example.log'
 
 const formatConfidence = (value: number) => `${Math.round(value * 100)}%`
+const formatRelativeTime = (deltaMs: number) => {
+  const safeMs = Math.max(deltaMs, 0)
+  const minutes = Math.floor(safeMs / 60000)
+  const seconds = Math.floor((safeMs % 60000) / 1000)
+  const milliseconds = safeMs % 1000
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(milliseconds).padStart(3, '0')}`
+}
 
 function App() {
   const [source, setSource] = useState<FrameSource>('simulated_log')
@@ -157,6 +164,11 @@ function App() {
     })
   }, [frames, filters])
 
+  const firstVisibleTsMs = useMemo(
+    () => (filteredFrames.length > 0 ? filteredFrames[0].raw.ts_ms : null),
+    [filteredFrames],
+  )
+
   const selectedFrame = filteredFrames[selectedIndex] ?? null
 
   useEffect(() => {
@@ -287,6 +299,7 @@ function App() {
           <table>
             <thead>
               <tr>
+                <th>Time</th>
                 <th>ts_ms</th>
                 <th>Direction</th>
                 <th>Raw</th>
@@ -301,6 +314,7 @@ function App() {
                   className={index === selectedIndex ? 'selected-row' : ''}
                   onClick={() => setSelectedIndex(index)}
                 >
+                  <td>{formatRelativeTime(frame.raw.ts_ms - (firstVisibleTsMs ?? frame.raw.ts_ms))}</td>
                   <td>{frame.raw.ts_ms}</td>
                   <td>
                     <span className={`badge badge-direction ${frame.raw.direction}`}>{frame.raw.direction}</span>
@@ -316,7 +330,7 @@ function App() {
               ))}
               {!isLoading && filteredFrames.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="empty">
+                  <td colSpan={6} className="empty">
                     No frames match current filters.
                   </td>
                 </tr>

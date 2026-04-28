@@ -261,6 +261,9 @@ code {
 .details-panel {
   padding: 1rem;
   background: linear-gradient(170deg, #ffffff 0%, #f6fbff 100%);
+  position: sticky;
+  top: 1rem;
+  align-self: start;
 }
 
 .details-panel h2 {
@@ -335,6 +338,8 @@ code {
 
   .details-panel {
     order: -1;
+    position: static;
+    top: auto;
   }
 }
 
