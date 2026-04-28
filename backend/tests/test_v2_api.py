@@ -2,13 +2,38 @@ from pathlib import Path
 
 from app.decoder import DaliDecoder, DecodePipeline, load_decoder_spec
 from app.decoder.models import RawFrame
+from app.decoder.sources import RuntimeSourceConfig, SourceRegistry
 from app.main import app
 from fastapi.testclient import TestClient
 
 client = TestClient(app)
 
 
-def test_v2_logs_endpoint() -> None:
+def _install_test_log_registry(tmp_path: Path) -> None:
+    log_file = tmp_path / "sniffer_log_example.log"
+    log_file.write_text(
+        "\n".join(
+            [
+                "[2026-01-01 00:00:00.000] sniffer ts_ms=100 dir=rx_forward16 raw=0xFF91",
+                "[2026-01-01 00:00:00.020] sniffer ts_ms=120 dir=rx_backward raw=0xFF",
+                "[2026-01-01 00:00:00.050] sniffer ts_ms=150 dir=rx_forward24 raw=0x01FE30",
+                "[2026-01-01 00:00:00.070] sniffer ts_ms=170 dir=rx_backward raw=0x22",
+                "[2026-01-01 00:00:00.090] sniffer ts_ms=190 dir=rx_forward24 raw=0x01FE3C",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    app.state.source_registry = SourceRegistry(
+        RuntimeSourceConfig(
+            simulated_logs_dir=tmp_path,
+            serial_port=None,
+            serial_baudrate=115200,
+        )
+    )
+
+
+def test_v2_logs_endpoint(tmp_path: Path) -> None:
+    _install_test_log_registry(tmp_path)
     response = client.get("/api/v2/logs")
     assert response.status_code == 200
 
@@ -17,7 +42,8 @@ def test_v2_logs_endpoint() -> None:
     assert any(item["name"] == "sniffer_log_example.log" for item in payload)
 
 
-def test_v2_frames_simulated_shape() -> None:
+def test_v2_frames_simulated_shape(tmp_path: Path) -> None:
+    _install_test_log_registry(tmp_path)
     response = client.get(
         "/api/v2/frames",
         params={"source": "simulated_log", "log_name": "sniffer_log_example.log", "limit": 5},

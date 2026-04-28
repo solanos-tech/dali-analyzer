@@ -171,12 +171,7 @@ class SerialSourceReader:
 
 
 def build_source_registry() -> SourceRegistry:
-    sim_dir = Path(
-        os.getenv(
-            "SIM_LOG_DIR",
-            str(Path(__file__).resolve().parents[3] / "docs" / "standards"),
-        )
-    )
+    sim_dir = _resolve_simulated_logs_dir()
     serial_port = os.getenv("SERIAL_PORT")
     serial_baudrate = int(os.getenv("SERIAL_BAUDRATE", "115200"))
 
@@ -187,6 +182,26 @@ def build_source_registry() -> SourceRegistry:
             serial_baudrate=serial_baudrate,
         )
     )
+
+
+def _resolve_simulated_logs_dir() -> Path:
+    configured = os.getenv("SIM_LOG_DIR")
+    if configured:
+        return Path(configured)
+
+    cwd = Path.cwd()
+    source_file = Path(__file__).resolve()
+    candidates = [
+        cwd / "docs" / "standards",
+        cwd.parent / "docs" / "standards",
+        source_file.parents[3] / "docs" / "standards",
+    ]
+
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+
+    return candidates[0]
 
 
 def to_raw_frame(frame: ParsedSnifferFrame, source: FrameSourceV2, log_name: str | None) -> RawFrame:
