@@ -19,7 +19,13 @@ from app.decoder import (
     build_source_registry,
     load_decoder_spec,
 )
-from app.decoder.models import DecodedFrameRecord, LogFileInfo, SerialConnectionStatus, SerialPortInfo
+from app.decoder.models import (
+    DecodedFrameRecord,
+    InstanceContextSnapshot,
+    LogFileInfo,
+    SerialConnectionStatus,
+    SerialPortInfo,
+)
 
 
 class Frame(BaseModel):
@@ -195,6 +201,13 @@ def get_decoded_frames(
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
     return pipeline.decode_snapshot(raw_frames)
+
+
+@app.get("/api/v2/context/instances", response_model=InstanceContextSnapshot)
+def get_instance_context() -> InstanceContextSnapshot:
+    _ensure_runtime()
+    pipeline: DecodePipeline = app.state.pipeline
+    return pipeline.instance_context_snapshot()
 
 
 @app.get("/api/v2/stream")

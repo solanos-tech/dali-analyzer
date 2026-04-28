@@ -232,6 +232,11 @@ code {
   color: var(--ok);
 }
 
+.badge-status.decoded_generic {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
 .badge-status.reserved {
   background: var(--warn-soft);
   color: var(--warn);

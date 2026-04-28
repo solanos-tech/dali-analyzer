@@ -261,6 +261,114 @@ def test_v2_frames_missing_log_returns_404(tmp_path: Path) -> None:
     assert response.status_code == 404
 
 
+def test_v2_forward24_semantic_routing_vectors(tmp_path: Path) -> None:
+    spec = load_decoder_spec(
+        Path("app/specs/dali_decoder.json"),
+        Path("app/specs/dali_decoder.schema.json"),
+    )
+    app.state.pipeline = DecodePipeline(DaliDecoder(spec))
+
+    log_file = tmp_path / "sniffer_log_example.log"
+    log_file.write_text(
+        "\n".join(
+            [
+                "[2026-01-01 00:00:00.000] sniffer ts_ms=100 dir=rx_forward24 raw=0x01018D",
+                "[2026-01-01 00:00:00.010] sniffer ts_ms=110 dir=rx_forward24 raw=0x01018C",
+                "[2026-01-01 00:00:00.020] sniffer ts_ms=120 dir=rx_forward24 raw=0xC9FFFF",
+                "[2026-01-01 00:00:00.030] sniffer ts_ms=130 dir=rx_forward24 raw=0x01FE30",
+                "[2026-01-01 00:00:00.040] sniffer ts_ms=140 dir=rx_forward24 raw=0x01FE3C",
+                "[2026-01-01 00:00:00.050] sniffer ts_ms=150 dir=rx_forward24 raw=0xC10300",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    app.state.source_registry = SourceRegistry(
+        RuntimeSourceConfig(
+            simulated_logs_dir=tmp_path,
+            serial_port=None,
+            serial_baudrate=115200,
+        )
+    )
+
+    response = client.get(
+        "/api/v2/frames",
+        params={"source": "simulated_log", "log_name": "sniffer_log_example.log", "limit": 6},
+    )
+    assert response.status_code == 200
+    payload = response.json()
+    by_raw = {item["raw"]["raw_hex"].upper(): item for item in payload}
+
+    assert by_raw["0X01018D"]["decoded"]["frame_class"] == "forward24_input_notification"
+    assert by_raw["0X01018D"]["decoded"]["status"] == "decoded_generic"
+    assert by_raw["0X01018D"]["transaction"]["expects_backward"] is False
+
+    assert by_raw["0X01018C"]["decoded"]["frame_class"] == "forward24_input_notification"
+    assert by_raw["0X01018C"]["decoded"]["status"] == "decoded_generic"
+
+    assert by_raw["0XC9FFFF"]["decoded"]["frame_class"] == "forward24_special_or_helper"
+    assert by_raw["0XC9FFFF"]["decoded"]["frame_class"] != "forward24_instance_command_or_query"
+
+    assert by_raw["0X01FE30"]["decoded"]["frame_class"] in {
+        "forward24_device_level_query",
+        "forward24_device_level_instruction",
+    }
+    assert by_raw["0X01FE3C"]["decoded"]["frame_class"] in {
+        "forward24_device_level_query",
+        "forward24_device_level_instruction",
+    }
+    assert by_raw["0XC10300"]["decoded"]["frame_class"] == "forward24_special"
+
+
+def test_v2_instance_context_endpoint_and_semantic_levels(tmp_path: Path) -> None:
+    spec = load_decoder_spec(
+        Path("app/specs/dali_decoder.json"),
+        Path("app/specs/dali_decoder.schema.json"),
+    )
+    app.state.pipeline = DecodePipeline(DaliDecoder(spec))
+
+    log_file = tmp_path / "sniffer_log_example.log"
+    log_file.write_text(
+        "\n".join(
+            [
+                "[2026-01-01 00:00:00.000] sniffer ts_ms=100 dir=rx_forward24 raw=0x010180",
+                "[2026-01-01 00:00:00.010] sniffer ts_ms=110 dir=rx_backward raw=0x03",
+                "[2026-01-01 00:00:00.020] sniffer ts_ms=120 dir=rx_forward24 raw=0x01018B",
+                "[2026-01-01 00:00:00.030] sniffer ts_ms=130 dir=rx_backward raw=0x02",
+                "[2026-01-01 00:00:00.040] sniffer ts_ms=140 dir=rx_forward24 raw=0x01018D",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    app.state.source_registry = SourceRegistry(
+        RuntimeSourceConfig(
+            simulated_logs_dir=tmp_path,
+            serial_port=None,
+            serial_baudrate=115200,
+        )
+    )
+
+    response = client.get(
+        "/api/v2/frames",
+        params={"source": "simulated_log", "log_name": "sniffer_log_example.log", "limit": 5},
+    )
+    assert response.status_code == 200
+    payload = response.json()
+
+    notification = next(item for item in payload if item["raw"]["raw_hex"].upper() == "0X01018D")
+    assert notification["decoded"]["semantic_level"] == "full"
+    assert notification["decoded"]["status"] == "decoded_generic"
+
+    context_response = client.get("/api/v2/context/instances")
+    assert context_response.status_code == 200
+    context_payload = context_response.json()
+    assert context_payload["devices"]
+    first = context_payload["devices"][0]
+    assert first["short_address"] == 0
+    assert first["instance"] == 1
+    assert first["instance_type"] == 3
+    assert first["event_scheme"] == 2
+
+
 def test_v2_stream_emits_frame_event() -> None:
     spec = load_decoder_spec(
         Path("app/specs/dali_decoder.json"),

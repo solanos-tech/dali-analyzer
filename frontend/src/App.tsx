@@ -16,6 +16,7 @@ import type {
   FrameDirection,
   FrameSource,
   LogFileInfo,
+  SemanticLevel,
   SerialConnectionStatus,
   SerialPortInfo,
 } from './types'
@@ -23,6 +24,7 @@ import type {
 type FilterState = {
   direction: 'all' | FrameDirection
   status: 'all' | DecodeStatus
+  semanticLevel: 'all' | SemanticLevel
   query: string
 }
 
@@ -62,7 +64,12 @@ function App() {
   const [error, setError] = useState<string | null>(null)
   const [isLive, setIsLive] = useState(false)
   const [liveMode, setLiveMode] = useState<'sse' | 'polling' | 'off'>('off')
-  const [filters, setFilters] = useState<FilterState>({ direction: 'all', status: 'all', query: '' })
+  const [filters, setFilters] = useState<FilterState>({
+    direction: 'all',
+    status: 'all',
+    semanticLevel: 'all',
+    query: '',
+  })
   const [serialPorts, setSerialPorts] = useState<SerialPortInfo[]>([])
   const [selectedSerialPort, setSelectedSerialPort] = useState<string>('')
   const [serialStatus, setSerialStatus] = useState<SerialConnectionStatus>(DISCONNECTED_STATUS)
@@ -208,9 +215,12 @@ function App() {
       if (filters.status !== 'all' && frame.decoded.status !== filters.status) {
         return false
       }
+      if (filters.semanticLevel !== 'all' && frame.decoded.semantic_level !== filters.semanticLevel) {
+        return false
+      }
       if (filters.query.trim()) {
         const needle = filters.query.trim().toLowerCase()
-        const haystack = `${frame.raw.raw_hex} ${frame.decoded.name} ${frame.decoded.opcode ?? ''} ${frame.decoded.addressing ?? ''}`.toLowerCase()
+        const haystack = `${frame.raw.raw_hex} ${frame.decoded.name} ${frame.decoded.opcode ?? ''} ${frame.decoded.addressing ?? ''} ${frame.decoded.semantic_name ?? ''}`.toLowerCase()
         if (!haystack.includes(needle)) {
           return false
         }
@@ -452,9 +462,29 @@ function App() {
           >
             <option value="all">All statuses</option>
             <option value="decoded">decoded</option>
+            <option value="decoded_generic">decoded_generic</option>
             <option value="reserved">reserved</option>
             <option value="unknown">unknown</option>
             <option value="ambiguous">ambiguous</option>
+          </select>
+        </label>
+
+        <label className="field" htmlFor="filter-semantic-level">
+          Semantic level
+          <select
+            id="filter-semantic-level"
+            value={filters.semanticLevel}
+            onChange={(event) =>
+              setFilters((current) => ({
+                ...current,
+                semanticLevel: event.target.value as FilterState['semanticLevel'],
+              }))
+            }
+          >
+            <option value="all">All levels</option>
+            <option value="generic">generic</option>
+            <option value="instance_aware">instance_aware</option>
+            <option value="full">full</option>
           </select>
         </label>
 
@@ -569,6 +599,14 @@ function App() {
                       ? `${selectedFrame.transaction.latency_ms} ms`
                       : 'n/a'}
                   </strong>
+                </div>
+                <div>
+                  <span className="detail-label">Semantic level</span>
+                  <strong>{selectedFrame.decoded.semantic_level}</strong>
+                </div>
+                <div>
+                  <span className="detail-label">Semantic name</span>
+                  <strong>{selectedFrame.decoded.semantic_name ?? 'n/a'}</strong>
                 </div>
               </div>
 
