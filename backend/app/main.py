@@ -34,6 +34,10 @@ class SerialConnectRequest(BaseModel):
     baudrate: int | None = None
 
 
+class SerialCommandRequest(BaseModel):
+    command: Literal["sniffer_on"]
+
+
 app = FastAPI(title="DALI Analyzer API")
 
 allowed_origins = [
@@ -154,6 +158,18 @@ def disconnect_serial() -> SerialConnectionStatus:
     _ensure_runtime()
     registry = app.state.source_registry
     return registry.disconnect_serial()
+
+
+@app.post("/api/v2/serial/command")
+def serial_command(request: SerialCommandRequest) -> dict[str, str]:
+    _ensure_runtime()
+    registry = app.state.source_registry
+    try:
+        if request.command == "sniffer_on":
+            registry.serial_sniffer_on()
+    except SourceError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return {"status": "ok", "command": request.command}
 
 
 @app.get("/api/v2/frames", response_model=list[DecodedFrameRecord])

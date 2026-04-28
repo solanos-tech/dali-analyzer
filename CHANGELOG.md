@@ -32,6 +32,8 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 - Added frontend split-view monitoring UI with semantic badges, filters, detail panel, and live SSE fallback.
 - Added serial port discovery and connection-control API endpoints (`/api/v2/serial/ports`, `/serial/status`, `/serial/connect`, `/serial/disconnect`).
 - Added frontend serial connection controls (port refresh/select, connect/disconnect status, and live-stream guard).
+- Added serial command endpoint `POST /api/v2/serial/command` with `sniffer_on` support for connected sessions.
+- Added frontend status-panel actions to clear in-memory frames and export current log buffer as `.log`.
 
 ### Changed
 
@@ -47,3 +49,5 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 - Fixed malformed backend `pyproject.toml` version field to restore valid TOML parsing for toolchain checks.
 - Updated backend and frontend module docs to describe the v2 decoded frame contract and source modes.
 - Updated runbook with branch hygiene checklist for merged-branch cleanup workflow.
+- Fixed frontend `Time` column to calculate delta from the oldest visible frame timestamp (after filters), removing all-zero live values.
+- Updated live serial start flow to send `Sniffer on` before opening SSE stream.

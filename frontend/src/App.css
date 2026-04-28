@@ -148,6 +148,16 @@ button:disabled {
   flex-wrap: wrap;
 }
 
+.status-actions button {
+  background: #f8fbff;
+  color: var(--brand);
+  border-color: #9bb6d8;
+}
+
+.status-actions button:disabled {
+  opacity: 0.45;
+}
+
 .loading {
   color: var(--brand);
 }

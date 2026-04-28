@@ -98,6 +98,17 @@ export const disconnectSerial = async (): Promise<SerialConnectionStatus> => {
   return (await response.json()) as SerialConnectionStatus
 }
 
+export const sendSerialCommand = async (command: 'sniffer_on'): Promise<void> => {
+  const response = await fetch(buildUrl('/api/v2/serial/command'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ command }),
+  })
+  if (!response.ok) {
+    throw await buildApiError(response, 'Failed to send serial command')
+  }
+}
+
 const buildApiError = async (response: Response, prefix: string): Promise<Error> => {
   try {
     const payload = (await response.json()) as { detail?: string }
