@@ -24,6 +24,12 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 - Added automation workflows:
   - `.github/workflows/auto-logs-on-pr-merge.yml`
   - `.github/workflows/auto-logs-on-release-success.yml`
+- Added backend DALI decoder v2 architecture driven by JSON spec and schema under `backend/app/specs`.
+- Added backend decoder pipeline modules for frame classification, opcode lookup, context handling, and transaction correlation.
+- Added new backend v2 endpoints for log listing, decoded snapshot, SSE streaming, and spec reload.
+- Added simulated log source mode that replays `sniffer` logs using `ts_ms` timing with loop playback.
+- Added backend tests for decoder spec validation and v2 API contracts.
+- Added frontend split-view monitoring UI with semantic badges, filters, detail panel, and live SSE fallback.
 
 ### Changed
 
@@ -36,3 +42,5 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 - Updated agent docs and templates to require post-merge and post-release knowledge/decision logging.
 - Updated root/backend/frontend README files with clearer run instructions and automatic logging behavior.
 - Bumped release versions for backend/frontend to `0.1.7`.
+- Fixed malformed backend `pyproject.toml` version field to restore valid TOML parsing for toolchain checks.
+- Updated backend and frontend module docs to describe the v2 decoded frame contract and source modes.

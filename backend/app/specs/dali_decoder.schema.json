@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DALI Decoder Spec",
+  "type": "object",
+  "required": [
+    "version",
+    "frame_types",
+    "forward16",
+    "forward24",
+    "correlation"
+  ],
+  "properties": {
+    "version": { "type": "string", "minLength": 1 },
+    "frame_types": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 3
+    },
+    "forward16": {
+      "type": "object",
+      "required": ["special_commands", "opcode_table"],
+      "properties": {
+        "special_commands": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/patternRule" }
+        },
+        "opcode_table": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/opcodeRule" }
+        }
+      }
+    },
+    "forward24": {
+      "type": "object",
+      "required": ["special_c1", "device_level_opcode_table"],
+      "properties": {
+        "special_c1": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/patternRule" }
+        },
+        "device_level_opcode_table": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/opcodeRule" }
+        }
+      }
+    },
+    "correlation": {
+      "type": "object",
+      "required": ["backward_directions"],
+      "properties": {
+        "backward_directions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        }
+      }
+    }
+  },
+  "$defs": {
+    "baseRule": {
+      "type": "object",
+      "required": ["name", "status"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "status": {
+          "type": "string",
+          "enum": ["decoded", "reserved", "unknown", "ambiguous"]
+        },
+        "description": { "type": "string" },
+        "expects_backward": { "type": "boolean" },
+        "send_twice": { "type": "boolean" }
+      }
+    },
+    "patternRule": {
+      "allOf": [
+        { "$ref": "#/$defs/baseRule" },
+        {
+          "type": "object",
+          "required": ["match"],
+          "properties": {
+            "match": {
+              "type": "object",
+              "oneOf": [
+                {
+                  "required": ["type", "value"],
+                  "properties": {
+                    "type": { "const": "exact" },
+                    "value": { "type": "string", "pattern": "^0x[0-9A-Fa-f]{4,6}$" }
+                  }
+                },
+                {
+                  "required": ["type", "mask", "value"],
+                  "properties": {
+                    "type": { "const": "mask" },
+                    "mask": { "type": "string", "pattern": "^0x[0-9A-Fa-f]{4,6}$" },
+                    "value": { "type": "string", "pattern": "^0x[0-9A-Fa-f]{4,6}$" }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "opcodeRule": {
+      "allOf": [
+        { "$ref": "#/$defs/baseRule" },
+        {
+          "type": "object",
+          "required": ["opcode"],
+          "properties": {
+            "opcode": {
+              "type": "object",
+              "oneOf": [
+                {
+                  "required": ["type", "value"],
+                  "properties": {
+                    "type": { "const": "exact" },
+                    "value": { "type": "string", "pattern": "^0x[0-9A-Fa-f]{2}$" }
+                  }
+                },
+                {
+                  "required": ["type", "start", "end"],
+                  "properties": {
+                    "type": { "const": "range" },
+                    "start": { "type": "string", "pattern": "^0x[0-9A-Fa-f]{2}$" },
+                    "end": { "type": "string", "pattern": "^0x[0-9A-Fa-f]{2}$" }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}
