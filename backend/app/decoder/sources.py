@@ -35,6 +35,10 @@ class SourceError(RuntimeError):
 class SerialLike(Protocol):
     def readline(self) -> bytes: ...
 
+    def write(self, data: bytes) -> int: ...
+
+    def flush(self) -> None: ...
+
     def close(self) -> None: ...
 
 
@@ -125,6 +129,27 @@ class SerialSessionManager:
                 baudrate=self._connected_baudrate,
                 message="Connected" if self._serial_obj is not None else "Disconnected",
             )
+
+    def send_sniffer_on(self) -> None:
+        with self._lock:
+            serial_obj = self._serial_obj
+        if serial_obj is None:
+            raise SourceError("Serial port is not connected")
+
+        try:
+            serial_obj.write(b"sniffer on\r\n")
+            serial_obj.flush()
+            for _ in range(5):
+                response = serial_obj.readline().decode("utf-8", errors="ignore").strip().lower()
+                if not response:
+                    continue
+                if "sniffer=on" in response:
+                    return
+            raise SourceError("Sniffer command was sent but confirmation was not received")
+        except Exception as exc:  # pragma: no cover - depends on serial backend
+            if isinstance(exc, SourceError):
+                raise
+            raise SourceError(f"Failed to send serial command: {exc}") from exc
 
     async def stream(self) -> AsyncIterator[RawFrame]:
         with self._lock:
@@ -277,6 +302,9 @@ class SourceRegistry:
 
     def serial_status(self) -> SerialConnectionStatus:
         return self._serial_manager.status()
+
+    def serial_sniffer_on(self) -> None:
+        self._serial_manager.send_sniffer_on()
 
 
 class SerialSourceReader:

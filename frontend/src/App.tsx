@@ -8,6 +8,7 @@ import {
   fetchLogs,
   fetchSerialPorts,
   fetchSerialStatus,
+  sendSerialCommand,
 } from './api/frames'
 import type {
   DecodedFrameRecord,
@@ -42,6 +43,14 @@ const DISCONNECTED_STATUS: SerialConnectionStatus = {
   baudrate: null,
   message: 'Disconnected',
 }
+
+const formatLogTimestamp = () => {
+  const iso = new Date().toISOString()
+  return iso.slice(0, 23).replace('T', ' ')
+}
+
+const frameToLogLine = (frame: DecodedFrameRecord) =>
+  `[${formatLogTimestamp()}] sniffer ts_ms=${frame.raw.ts_ms} dir=${frame.raw.direction} raw=${frame.raw.raw_hex}`
 
 function App() {
   const [source, setSource] = useState<FrameSource>('simulated_log')
@@ -210,10 +219,12 @@ function App() {
     })
   }, [frames, filters])
 
-  const firstVisibleTsMs = useMemo(
-    () => (filteredFrames.length > 0 ? filteredFrames[0].raw.ts_ms : null),
-    [filteredFrames],
-  )
+  const minVisibleTsMs = useMemo(() => {
+    if (filteredFrames.length === 0) {
+      return null
+    }
+    return filteredFrames.reduce((minTs, frame) => Math.min(minTs, frame.raw.ts_ms), filteredFrames[0].raw.ts_ms)
+  }, [filteredFrames])
 
   const selectedFrame = filteredFrames[selectedIndex] ?? null
 
@@ -257,10 +268,47 @@ function App() {
     }
   }
 
-  const handleStartLive = () => {
+  const handleClearLog = () => {
+    setFrames([])
+    setSelectedIndex(0)
+    setError(null)
+  }
+
+  const handleSaveLog = () => {
+    if (frames.length === 0) {
+      setError('No frames to save')
+      return
+    }
+
+    const lines = frames.map(frameToLogLine).join('\n')
+    const blob = new Blob([lines], { type: 'text/plain;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const stamp = new Date().toISOString().replaceAll(':', '').replaceAll('-', '').replace('T', '-').slice(0, 15)
+    const filename = `dali-sniffer-${stamp}.log`
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
+  }
+
+  const handleStartLive = async () => {
     if (source === 'serial' && !serialStatus.connected) {
       setError('Connect a serial port before starting live stream')
       return
+    }
+
+    setError(null)
+    if (source === 'serial') {
+      try {
+        await sendSerialCommand('sniffer_on')
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Unknown error'
+        setError(message)
+        return
+      }
     }
     setIsLive(true)
   }
@@ -357,7 +405,7 @@ function App() {
           </button>
           <button
             type="button"
-            onClick={handleStartLive}
+            onClick={() => void handleStartLive()}
             disabled={isLive || (source === 'serial' && !serialStatus.connected)}
           >
             Start live
@@ -430,6 +478,14 @@ function App() {
           </span>
         )}
         <span>Frames shown: {filteredFrames.length}</span>
+        <div className="actions status-actions">
+          <button type="button" onClick={handleClearLog} disabled={frames.length === 0}>
+            Clear log
+          </button>
+          <button type="button" onClick={handleSaveLog} disabled={frames.length === 0}>
+            Save log
+          </button>
+        </div>
         {isLoading && <span className="loading">Loading snapshot...</span>}
         {error && <span className="error">{error}</span>}
       </section>
@@ -454,7 +510,7 @@ function App() {
                   className={index === selectedIndex ? 'selected-row' : ''}
                   onClick={() => setSelectedIndex(index)}
                 >
-                  <td>{formatRelativeTime(frame.raw.ts_ms - (firstVisibleTsMs ?? frame.raw.ts_ms))}</td>
+                  <td>{formatRelativeTime(frame.raw.ts_ms - (minVisibleTsMs ?? frame.raw.ts_ms))}</td>
                   <td>{frame.raw.ts_ms}</td>
                   <td>
                     <span className={`badge badge-direction ${frame.raw.direction}`}>{frame.raw.direction}</span>

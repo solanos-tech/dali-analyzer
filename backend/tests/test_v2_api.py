@@ -51,6 +51,7 @@ class _DummySerialRegistry:
         self._connected = False
         self._port: str | None = None
         self._baudrate: int | None = None
+        self._sniffer_on_count = 0
 
     def list_serial_ports(self) -> list[SerialPortInfo]:
         return [
@@ -91,6 +92,11 @@ class _DummySerialRegistry:
             baudrate=self._baudrate,
             message="Connected" if self._connected else "Disconnected",
         )
+
+    def serial_sniffer_on(self) -> None:
+        if not self._connected:
+            raise SourceError("Serial port is not connected")
+        self._sniffer_on_count += 1
 
     def snapshot_serial(self, limit: int) -> list[RawFrame]:
         if not self._connected:
@@ -228,6 +234,22 @@ def test_v2_serial_frames_require_connection() -> None:
     _install_dummy_serial_registry()
     response = client.get("/api/v2/frames", params={"source": "serial", "limit": 3})
     assert response.status_code == 409
+
+
+def test_v2_serial_command_requires_connection() -> None:
+    _install_dummy_serial_registry()
+    response = client.post("/api/v2/serial/command", json={"command": "sniffer_on"})
+    assert response.status_code == 409
+
+
+def test_v2_serial_command_sniffer_on_when_connected() -> None:
+    _install_dummy_serial_registry()
+    connect_response = client.post("/api/v2/serial/connect", json={"port": "COM3"})
+    assert connect_response.status_code == 200
+
+    response = client.post("/api/v2/serial/command", json={"command": "sniffer_on"})
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok", "command": "sniffer_on"}
 
 
 def test_v2_frames_missing_log_returns_404(tmp_path: Path) -> None:
