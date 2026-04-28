@@ -10,6 +10,11 @@ client = TestClient(app)
 
 
 def _install_test_log_registry(tmp_path: Path) -> None:
+    spec = load_decoder_spec(
+        Path("app/specs/dali_decoder.json"),
+        Path("app/specs/dali_decoder.schema.json"),
+    )
+    app.state.pipeline = DecodePipeline(DaliDecoder(spec))
     log_file = tmp_path / "sniffer_log_example.log"
     log_file.write_text(
         "\n".join(
