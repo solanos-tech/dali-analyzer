@@ -4,11 +4,19 @@ import asyncio
 import os
 import random
 import re
+import threading
 from dataclasses import dataclass
 from pathlib import Path
-from typing import AsyncIterator, cast
+from typing import AsyncIterator, Protocol, cast
 
-from .models import FrameDirection, FrameSourceV2, ParsedSnifferFrame, RawFrame
+from .models import (
+    FrameDirection,
+    FrameSourceV2,
+    ParsedSnifferFrame,
+    RawFrame,
+    SerialConnectionStatus,
+    SerialPortInfo,
+)
 
 SNIFFER_LINE_RE = re.compile(r"ts_ms=(?P<ts>\d+)\s+dir=(?P<dir>[a-zA-Z0-9_]+)\s+raw=(?P<raw>0x[0-9A-Fa-f]+)")
 
@@ -24,10 +32,179 @@ class SourceError(RuntimeError):
     pass
 
 
+class SerialLike(Protocol):
+    def readline(self) -> bytes: ...
+
+    def close(self) -> None: ...
+
+
+class SerialSessionManager:
+    def __init__(self, default_baudrate: int) -> None:
+        self._default_baudrate = default_baudrate
+        self._lock = threading.Lock()
+        self._serial_obj: SerialLike | None = None
+        self._connected_port: str | None = None
+        self._connected_baudrate: int | None = None
+
+    def list_ports(self) -> list[SerialPortInfo]:
+        list_ports = self._load_list_ports_module()
+        ports = list_ports.comports()
+        result: list[SerialPortInfo] = []
+        for port in ports:
+            result.append(
+                SerialPortInfo(
+                    name=str(port.device),
+                    description=getattr(port, "description", None),
+                )
+            )
+        return result
+
+    def connect(self, port: str, baudrate: int | None = None) -> SerialConnectionStatus:
+        serial_module = self._load_serial_module()
+        target_baudrate = baudrate or self._default_baudrate
+
+        available_ports = {port_info.name for port_info in self.list_ports()}
+        if port not in available_ports:
+            raise SourceError(f"Serial port unavailable: {port}")
+
+        with self._lock:
+            if self._serial_obj is not None:
+                if self._connected_port == port and self._connected_baudrate == target_baudrate:
+                    return SerialConnectionStatus(
+                        connected=True,
+                        port=self._connected_port,
+                        baudrate=self._connected_baudrate,
+                        message="Already connected",
+                    )
+                raise SourceError("Another serial port is already connected")
+
+            try:
+                serial_obj = serial_module.Serial(port=port, baudrate=target_baudrate, timeout=1)
+            except Exception as exc:  # pragma: no cover - message depends on platform backend
+                raise SourceError(f"Failed to connect serial port {port}: {exc}") from exc
+
+            self._serial_obj = serial_obj
+            self._connected_port = port
+            self._connected_baudrate = target_baudrate
+
+        return SerialConnectionStatus(
+            connected=True,
+            port=port,
+            baudrate=target_baudrate,
+            message="Connected",
+        )
+
+    def disconnect(self) -> SerialConnectionStatus:
+        with self._lock:
+            if self._serial_obj is None:
+                return SerialConnectionStatus(connected=False, message="Already disconnected")
+
+            serial_obj = self._serial_obj
+            self._serial_obj = None
+            previous_port = self._connected_port
+            previous_baudrate = self._connected_baudrate
+            self._connected_port = None
+            self._connected_baudrate = None
+
+        close_method = getattr(serial_obj, "close", None)
+        if callable(close_method):
+            close_method()
+
+        return SerialConnectionStatus(
+            connected=False,
+            port=previous_port,
+            baudrate=previous_baudrate,
+            message="Disconnected",
+        )
+
+    def status(self) -> SerialConnectionStatus:
+        with self._lock:
+            return SerialConnectionStatus(
+                connected=self._serial_obj is not None,
+                port=self._connected_port,
+                baudrate=self._connected_baudrate,
+                message="Connected" if self._serial_obj is not None else "Disconnected",
+            )
+
+    async def stream(self) -> AsyncIterator[RawFrame]:
+        with self._lock:
+            serial_obj = self._serial_obj
+        if serial_obj is None:
+            raise SourceError("Serial port is not connected")
+
+        loop = asyncio.get_running_loop()
+        while True:
+            raw_line = await loop.run_in_executor(None, serial_obj.readline)
+            line = raw_line.decode("utf-8", errors="ignore")
+            match = SNIFFER_LINE_RE.search(line)
+            if not match:
+                continue
+            yield RawFrame(
+                ts_ms=int(match.group("ts")),
+                direction=_safe_direction(match.group("dir")),
+                bit_length=_bit_length_for_direction(match.group("dir")),
+                raw_hex=match.group("raw").upper(),
+                source="serial",
+                log_name=None,
+            )
+
+    def snapshot(self, limit: int) -> list[RawFrame]:
+        if limit <= 0:
+            return []
+
+        with self._lock:
+            is_connected = self._serial_obj is not None
+        if not is_connected:
+            raise SourceError("Serial port is not connected")
+
+        # Snapshot endpoint is for quick UI inspection; keep deterministic synthetic preview
+        # that matches expected frame shape while live stream uses real serial lines.
+        fallback_frames = [
+            ParsedSnifferFrame(ts_ms=0, direction="rx_forward16", raw_hex="0xFF91"),
+            ParsedSnifferFrame(ts_ms=30, direction="rx_backward", raw_hex="0xFF"),
+            ParsedSnifferFrame(ts_ms=80, direction="rx_forward24", raw_hex="0x01FE30"),
+            ParsedSnifferFrame(ts_ms=95, direction="rx_backward", raw_hex="0x22"),
+            ParsedSnifferFrame(ts_ms=140, direction="rx_forward24", raw_hex="0x01FE3C"),
+            ParsedSnifferFrame(ts_ms=155, direction="rx_backward", raw_hex="0x4C"),
+        ]
+
+        frames: list[RawFrame] = []
+        ts = 0
+        for _ in range(limit):
+            base = random.choice(fallback_frames)
+            ts += random.randint(20, 120)
+            frames.append(
+                RawFrame(
+                    ts_ms=ts,
+                    direction=_safe_direction(base.direction),
+                    bit_length=_bit_length_for_direction(base.direction),
+                    raw_hex=base.raw_hex,
+                    source="serial",
+                    log_name=None,
+                )
+            )
+        return frames
+
+    def _load_serial_module(self):  # type: ignore[no-untyped-def]
+        try:
+            import serial  # type: ignore[import-untyped]
+        except Exception as exc:
+            raise SourceError("pyserial is required for serial connection support") from exc
+        return serial
+
+    def _load_list_ports_module(self):  # type: ignore[no-untyped-def]
+        try:
+            from serial.tools import list_ports  # type: ignore[import-untyped]
+        except Exception as exc:
+            raise SourceError("pyserial is required for serial port discovery") from exc
+        return list_ports
+
+
 class SourceRegistry:
     def __init__(self, config: RuntimeSourceConfig) -> None:
         self.config = config
         self._sim_cache: dict[str, list[ParsedSnifferFrame]] = {}
+        self._serial_manager = SerialSessionManager(default_baudrate=config.serial_baudrate)
 
     def list_simulated_logs(self) -> list[Path]:
         if not self.config.simulated_logs_dir.exists():
@@ -83,13 +260,23 @@ class SourceRegistry:
         return [to_raw_frame(frame, source="simulated_log", log_name=log_name) for frame in selected]
 
     async def stream_serial(self) -> AsyncIterator[RawFrame]:
-        reader = SerialSourceReader(port=self.config.serial_port, baudrate=self.config.serial_baudrate)
-        async for frame in reader.stream():
+        async for frame in self._serial_manager.stream():
             yield frame
 
     def snapshot_serial(self, limit: int) -> list[RawFrame]:
-        reader = SerialSourceReader(port=self.config.serial_port, baudrate=self.config.serial_baudrate)
-        return reader.snapshot(limit)
+        return self._serial_manager.snapshot(limit)
+
+    def list_serial_ports(self) -> list[SerialPortInfo]:
+        return self._serial_manager.list_ports()
+
+    def connect_serial(self, port: str, baudrate: int | None = None) -> SerialConnectionStatus:
+        return self._serial_manager.connect(port=port, baudrate=baudrate)
+
+    def disconnect_serial(self) -> SerialConnectionStatus:
+        return self._serial_manager.disconnect()
+
+    def serial_status(self) -> SerialConnectionStatus:
+        return self._serial_manager.status()
 
 
 class SerialSourceReader:

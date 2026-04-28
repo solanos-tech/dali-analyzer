@@ -42,3 +42,17 @@ cd frontend
 npm install --no-audit --no-fund
 npm run dev
 ```
+
+## Branch Hygiene Checklist
+
+```powershell
+# before work
+git checkout main
+git pull --ff-only origin main
+git checkout -b codex/<feature-name>
+
+# after merge to main (cleanup merged branches only)
+git branch --merged main
+git branch -d <local-merged-branch>
+git push origin --delete <remote-merged-branch>
+```

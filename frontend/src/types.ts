@@ -56,3 +56,15 @@ export type LogFileInfo = {
   path: string
   size_bytes: number
 }
+
+export type SerialPortInfo = {
+  name: string
+  description: string | null
+}
+
+export type SerialConnectionStatus = {
+  connected: boolean
+  port: string | null
+  baudrate: number | null
+  message: string | null
+}

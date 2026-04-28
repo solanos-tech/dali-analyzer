@@ -57,3 +57,15 @@ class ParsedSnifferFrame(BaseModel):
     ts_ms: int
     direction: str
     raw_hex: str
+
+
+class SerialPortInfo(BaseModel):
+    name: str
+    description: str | None = None
+
+
+class SerialConnectionStatus(BaseModel):
+    connected: bool
+    port: str | None = None
+    baudrate: int | None = None
+    message: str | None = None

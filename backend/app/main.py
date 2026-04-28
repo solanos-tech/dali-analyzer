@@ -19,7 +19,7 @@ from app.decoder import (
     build_source_registry,
     load_decoder_spec,
 )
-from app.decoder.models import DecodedFrameRecord, LogFileInfo
+from app.decoder.models import DecodedFrameRecord, LogFileInfo, SerialConnectionStatus, SerialPortInfo
 
 
 class Frame(BaseModel):
@@ -27,6 +27,11 @@ class Frame(BaseModel):
     address: str
     command: str
     source: Literal["mock", "serial"]
+
+
+class SerialConnectRequest(BaseModel):
+    port: str
+    baudrate: int | None = None
 
 
 app = FastAPI(title="DALI Analyzer API")
@@ -117,6 +122,40 @@ def list_logs() -> list[LogFileInfo]:
     ]
 
 
+@app.get("/api/v2/serial/ports", response_model=list[SerialPortInfo])
+def list_serial_ports() -> list[SerialPortInfo]:
+    _ensure_runtime()
+    registry = app.state.source_registry
+    try:
+        return registry.list_serial_ports()
+    except SourceError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+
+@app.get("/api/v2/serial/status", response_model=SerialConnectionStatus)
+def serial_status() -> SerialConnectionStatus:
+    _ensure_runtime()
+    registry = app.state.source_registry
+    return registry.serial_status()
+
+
+@app.post("/api/v2/serial/connect", response_model=SerialConnectionStatus)
+def connect_serial(request: SerialConnectRequest) -> SerialConnectionStatus:
+    _ensure_runtime()
+    registry = app.state.source_registry
+    try:
+        return registry.connect_serial(port=request.port, baudrate=request.baudrate)
+    except SourceError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/api/v2/serial/disconnect", response_model=SerialConnectionStatus)
+def disconnect_serial() -> SerialConnectionStatus:
+    _ensure_runtime()
+    registry = app.state.source_registry
+    return registry.disconnect_serial()
+
+
 @app.get("/api/v2/frames", response_model=list[DecodedFrameRecord])
 def get_decoded_frames(
     source: Literal["simulated_log", "serial"] = Query(default="simulated_log"),
@@ -132,6 +171,9 @@ def get_decoded_frames(
             selected_log = log_name or "sniffer_log_example.log"
             raw_frames = registry.snapshot_simulated_log(selected_log, limit=limit)
         else:
+            status = registry.serial_status()
+            if not status.connected:
+                raise HTTPException(status_code=409, detail="Serial port is not connected")
             raw_frames = registry.snapshot_serial(limit=limit)
     except SourceError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
@@ -154,6 +196,9 @@ async def stream_decoded_frames(
                 selected_log = log_name or "sniffer_log_example.log"
                 raw_stream = registry.stream_simulated_log(selected_log)
             else:
+                status = registry.serial_status()
+                if not status.connected:
+                    raise SourceError("Serial port is not connected")
                 raw_stream = registry.stream_serial()
 
             async for record in pipeline.decode_stream(raw_stream):

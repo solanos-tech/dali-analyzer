@@ -18,6 +18,10 @@ API URL: `http://127.0.0.1:8000`
 - `GET /api/v2/logs`
 - `GET /api/v2/frames?source=simulated_log|serial&log_name=<file>&limit=<n>`
 - `GET /api/v2/stream?source=simulated_log|serial&log_name=<file>` (SSE)
+- `GET /api/v2/serial/ports`
+- `GET /api/v2/serial/status`
+- `POST /api/v2/serial/connect`
+- `POST /api/v2/serial/disconnect`
 - `POST /api/v2/admin/reload-specs`
 
 ## Quality checks
