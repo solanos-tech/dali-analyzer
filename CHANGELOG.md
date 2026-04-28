@@ -36,6 +36,9 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 - Added frontend status-panel actions to clear in-memory frames and export current log buffer as `.log`.
 - Added DALI-2 semantic upgrades for forward24 decoding: `forward24_input_notification`, helper-range classification, and instance query routing.
 - Added runtime instance-context endpoint `GET /api/v2/context/instances`.
+- Added repository closeout audit report: `docs/tasks/repo-hygiene-closeout-2026-04-28.md`.
+- Added future English migration/structure plan for DALI standard doc: `docs/tasks/dali-doc-english-migration-plan.md`.
+- Added traceability backup copy for DALI standards source text: `docs/standards/dali.pl.md`.
 
 ### Changed
 
