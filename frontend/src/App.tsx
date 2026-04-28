@@ -1,12 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
-import { createStreamUrl, fetchDecodedFrames, fetchLogs } from './api/frames'
+import {
+  connectSerial,
+  createStreamUrl,
+  disconnectSerial,
+  fetchDecodedFrames,
+  fetchLogs,
+  fetchSerialPorts,
+  fetchSerialStatus,
+} from './api/frames'
 import type {
   DecodedFrameRecord,
   DecodeStatus,
   FrameDirection,
   FrameSource,
   LogFileInfo,
+  SerialConnectionStatus,
+  SerialPortInfo,
 } from './types'
 
 type FilterState = {
@@ -26,6 +36,13 @@ const formatRelativeTime = (deltaMs: number) => {
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(milliseconds).padStart(3, '0')}`
 }
 
+const DISCONNECTED_STATUS: SerialConnectionStatus = {
+  connected: false,
+  port: null,
+  baudrate: null,
+  message: 'Disconnected',
+}
+
 function App() {
   const [source, setSource] = useState<FrameSource>('simulated_log')
   const [logs, setLogs] = useState<LogFileInfo[]>([])
@@ -37,6 +54,10 @@ function App() {
   const [isLive, setIsLive] = useState(false)
   const [liveMode, setLiveMode] = useState<'sse' | 'polling' | 'off'>('off')
   const [filters, setFilters] = useState<FilterState>({ direction: 'all', status: 'all', query: '' })
+  const [serialPorts, setSerialPorts] = useState<SerialPortInfo[]>([])
+  const [selectedSerialPort, setSelectedSerialPort] = useState<string>('')
+  const [serialStatus, setSerialStatus] = useState<SerialConnectionStatus>(DISCONNECTED_STATUS)
+  const [isConnectingSerial, setIsConnectingSerial] = useState(false)
   const eventSourceRef = useRef<EventSource | null>(null)
 
   const loadLogs = async () => {
@@ -68,6 +89,24 @@ function App() {
       setError(message)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const loadSerialControls = async () => {
+    setError(null)
+    try {
+      const [ports, status] = await Promise.all([fetchSerialPorts(), fetchSerialStatus()])
+      setSerialPorts(ports)
+      setSerialStatus(status)
+
+      const preferred = status.port ?? ports[0]?.name ?? ''
+      setSelectedSerialPort(preferred)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error'
+      setError(message)
+      setSerialPorts([])
+      setSerialStatus(DISCONNECTED_STATUS)
+      setSelectedSerialPort('')
     }
   }
 
@@ -111,6 +150,13 @@ function App() {
   }, [])
 
   useEffect(() => {
+    if (source === 'serial') {
+      void loadSerialControls()
+      setFrames([])
+      setSelectedIndex(0)
+      stopLive()
+      return
+    }
     void loadFrames()
     stopLive()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -177,6 +223,48 @@ function App() {
     }
   }, [filteredFrames.length, selectedIndex])
 
+  const handleConnectSerial = async () => {
+    if (!selectedSerialPort) {
+      setError('Choose a serial port first')
+      return
+    }
+    setIsConnectingSerial(true)
+    setError(null)
+    try {
+      const status = await connectSerial(selectedSerialPort)
+      setSerialStatus(status)
+      await loadFrames()
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error'
+      setError(message)
+    } finally {
+      setIsConnectingSerial(false)
+    }
+  }
+
+  const handleDisconnectSerial = async () => {
+    setIsConnectingSerial(true)
+    setError(null)
+    try {
+      const status = await disconnectSerial()
+      setSerialStatus(status)
+      stopLive()
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error'
+      setError(message)
+    } finally {
+      setIsConnectingSerial(false)
+    }
+  }
+
+  const handleStartLive = () => {
+    if (source === 'serial' && !serialStatus.connected) {
+      setError('Connect a serial port before starting live stream')
+      return
+    }
+    setIsLive(true)
+  }
+
   return (
     <main className="app-shell">
       <header className="app-header">
@@ -220,11 +308,58 @@ function App() {
           </label>
         )}
 
+        {source === 'serial' && (
+          <>
+            <label className="field" htmlFor="serial-port">
+              Serial port
+              <select
+                id="serial-port"
+                value={selectedSerialPort}
+                onChange={(event) => setSelectedSerialPort(event.target.value)}
+              >
+                {serialPorts.length === 0 && <option value="">No ports available</option>}
+                {serialPorts.map((port) => (
+                  <option key={port.name} value={port.name}>
+                    {port.name}{port.description ? ` - ${port.description}` : ''}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <div className="actions">
+              <button type="button" onClick={() => void loadSerialControls()} disabled={isConnectingSerial}>
+                Refresh ports
+              </button>
+              <button
+                type="button"
+                onClick={() => void handleConnectSerial()}
+                disabled={isConnectingSerial || serialStatus.connected || !selectedSerialPort}
+              >
+                Connect
+              </button>
+              <button
+                type="button"
+                onClick={() => void handleDisconnectSerial()}
+                disabled={isConnectingSerial || !serialStatus.connected}
+              >
+                Disconnect
+              </button>
+            </div>
+          </>
+        )}
+
         <div className="actions">
-          <button type="button" onClick={() => void loadFrames()} disabled={isLoading}>
+          <button
+            type="button"
+            onClick={() => void loadFrames()}
+            disabled={isLoading || (source === 'serial' && !serialStatus.connected)}
+          >
             Refresh snapshot
           </button>
-          <button type="button" onClick={() => setIsLive(true)} disabled={isLive}>
+          <button
+            type="button"
+            onClick={handleStartLive}
+            disabled={isLive || (source === 'serial' && !serialStatus.connected)}
+          >
             Start live
           </button>
           <button type="button" onClick={stopLive} disabled={!isLive}>
@@ -289,6 +424,11 @@ function App() {
 
       <section className="status-panel" aria-live="polite">
         <strong>{source === 'simulated_log' ? `Simulated: ${selectedLog}` : 'Serial source'}</strong>
+        {source === 'serial' && (
+          <span>
+            Serial: {serialStatus.connected ? `Connected (${serialStatus.port})` : 'Disconnected'}
+          </span>
+        )}
         <span>Frames shown: {filteredFrames.length}</span>
         {isLoading && <span className="loading">Loading snapshot...</span>}
         {error && <span className="error">{error}</span>}

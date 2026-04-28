@@ -26,7 +26,8 @@ npm run build
 ## UI modes
 
 - Source mode `simulated_log` with log selector fed from backend `/api/v2/logs`
-- Source mode `serial` for hardware stream view
+- Source mode `serial` with backend-driven port discovery (`/api/v2/serial/ports`)
+- Serial connect/disconnect flow (`/api/v2/serial/connect`, `/api/v2/serial/disconnect`)
 - Live mode via SSE with polling fallback when stream is unavailable
 
 ## Version and Release

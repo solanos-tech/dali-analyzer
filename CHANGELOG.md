@@ -30,6 +30,8 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 - Added simulated log source mode that replays `sniffer` logs using `ts_ms` timing with loop playback.
 - Added backend tests for decoder spec validation and v2 API contracts.
 - Added frontend split-view monitoring UI with semantic badges, filters, detail panel, and live SSE fallback.
+- Added serial port discovery and connection-control API endpoints (`/api/v2/serial/ports`, `/serial/status`, `/serial/connect`, `/serial/disconnect`).
+- Added frontend serial connection controls (port refresh/select, connect/disconnect status, and live-stream guard).
 
 ### Changed
 
@@ -44,3 +46,4 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 - Bumped release versions for backend/frontend to `0.1.7`.
 - Fixed malformed backend `pyproject.toml` version field to restore valid TOML parsing for toolchain checks.
 - Updated backend and frontend module docs to describe the v2 decoded frame contract and source modes.
+- Updated runbook with branch hygiene checklist for merged-branch cleanup workflow.
