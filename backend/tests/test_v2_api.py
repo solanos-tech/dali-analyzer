@@ -63,6 +63,42 @@ def test_v2_frames_simulated_shape(tmp_path: Path) -> None:
     assert first["raw"]["source"] == "simulated_log"
 
 
+def test_v2_frames_simulated_prefers_24bit_window(tmp_path: Path) -> None:
+    spec = load_decoder_spec(
+        Path("app/specs/dali_decoder.json"),
+        Path("app/specs/dali_decoder.schema.json"),
+    )
+    app.state.pipeline = DecodePipeline(DaliDecoder(spec))
+
+    log_file = tmp_path / "sniffer_log_example.log"
+    lines: list[str] = []
+    ts = 0
+    for _ in range(12):
+        lines.append(f"[2026-01-01 00:00:00.000] sniffer ts_ms={ts} dir=rx_forward16 raw=0xFF91")
+        ts += 10
+    for _ in range(12):
+        lines.append(f"[2026-01-01 00:00:00.000] sniffer ts_ms={ts} dir=rx_forward24 raw=0x01FE30")
+        ts += 10
+    log_file.write_text("\n".join(lines), encoding="utf-8")
+
+    app.state.source_registry = SourceRegistry(
+        RuntimeSourceConfig(
+            simulated_logs_dir=tmp_path,
+            serial_port=None,
+            serial_baudrate=115200,
+        )
+    )
+
+    response = client.get(
+        "/api/v2/frames",
+        params={"source": "simulated_log", "log_name": "sniffer_log_example.log", "limit": 8},
+    )
+    assert response.status_code == 200
+    payload = response.json()
+    assert len(payload) == 8
+    assert all(item["raw"]["direction"] == "rx_forward24" for item in payload)
+
+
 def test_v2_frames_serial_shape() -> None:
     response = client.get("/api/v2/frames", params={"source": "serial", "limit": 4})
     assert response.status_code == 200
