@@ -4,7 +4,8 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
-DecodeStatus = Literal["decoded", "reserved", "unknown", "ambiguous"]
+DecodeStatus = Literal["decoded", "decoded_generic", "reserved", "unknown", "ambiguous"]
+SemanticLevel = Literal["generic", "instance_aware", "full"]
 FrameSourceV2 = Literal["simulated_log", "serial"]
 FrameDirection = Literal["rx_forward16", "rx_forward24", "rx_backward", "tx_backward_local", "unknown"]
 
@@ -27,6 +28,9 @@ class DecodedFrame(BaseModel):
     params: dict[str, Any] = Field(default_factory=dict)
     warnings: list[str] = Field(default_factory=list)
     confidence: float = 0.0
+    semantic_level: SemanticLevel = "generic"
+    semantic_name: str | None = None
+    semantic_reason: str | None = None
 
 
 class TransactionInfo(BaseModel):
@@ -69,3 +73,16 @@ class SerialConnectionStatus(BaseModel):
     port: str | None = None
     baudrate: int | None = None
     message: str | None = None
+
+
+class InstanceRuntimeContext(BaseModel):
+    short_address: int
+    instance: int
+    instance_type: int | None = None
+    event_scheme: int | None = None
+    event_filter: int | None = None
+    event_priority: int | None = None
+
+
+class InstanceContextSnapshot(BaseModel):
+    devices: list[InstanceRuntimeContext] = Field(default_factory=list)

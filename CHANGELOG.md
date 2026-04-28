@@ -34,6 +34,8 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 - Added frontend serial connection controls (port refresh/select, connect/disconnect status, and live-stream guard).
 - Added serial command endpoint `POST /api/v2/serial/command` with `sniffer_on` support for connected sessions.
 - Added frontend status-panel actions to clear in-memory frames and export current log buffer as `.log`.
+- Added DALI-2 semantic upgrades for forward24 decoding: `forward24_input_notification`, helper-range classification, and instance query routing.
+- Added runtime instance-context endpoint `GET /api/v2/context/instances`.
 
 ### Changed
 
@@ -51,3 +53,4 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 - Updated runbook with branch hygiene checklist for merged-branch cleanup workflow.
 - Fixed frontend `Time` column to calculate delta from the oldest visible frame timestamp (after filters), removing all-zero live values.
 - Updated live serial start flow to send `Sniffer on` before opening SSE stream.
+- Extended decoded frame contract with semantic metadata (`semantic_level`, `semantic_name`, `semantic_reason`) and new decode status `decoded_generic`.

@@ -27,7 +27,7 @@ REQUIRED_TOP_LEVEL = {"version", "frame_types", "forward16", "forward24", "corre
 REQUIRED_FORWARD16 = {"special_commands", "opcode_table"}
 REQUIRED_FORWARD24 = {"special_c1", "device_level_opcode_table"}
 REQUIRED_CORRELATION = {"backward_directions"}
-ALLOWED_STATUS = {"decoded", "reserved", "unknown", "ambiguous"}
+ALLOWED_STATUS = {"decoded", "decoded_generic", "reserved", "unknown", "ambiguous"}
 
 
 def load_decoder_spec(spec_path: Path, schema_path: Path) -> DecoderSpec:

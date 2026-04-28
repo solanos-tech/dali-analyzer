@@ -9,7 +9,9 @@ export type LegacyFrame = {
 
 export type FrameSource = 'simulated_log' | 'serial'
 
-export type DecodeStatus = 'decoded' | 'reserved' | 'unknown' | 'ambiguous'
+export type DecodeStatus = 'decoded' | 'decoded_generic' | 'reserved' | 'unknown' | 'ambiguous'
+
+export type SemanticLevel = 'generic' | 'instance_aware' | 'full'
 
 export type FrameDirection =
   | 'rx_forward16'
@@ -36,6 +38,9 @@ export type DecodedFrame = {
   params: Record<string, unknown>
   warnings: string[]
   confidence: number
+  semantic_level: SemanticLevel
+  semantic_name: string | null
+  semantic_reason: string | null
 }
 
 export type TransactionInfo = {

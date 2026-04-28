@@ -3,8 +3,52 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from .models import DecodeStatus, DecodedFrame, RawFrame
+from .models import DecodeStatus, DecodedFrame, RawFrame, SemanticLevel
 from .spec_loader import DecoderSpec
+
+
+INSTANCE_TYPE_NAMES: dict[int, str] = {
+    0x00: "generic_sensor",
+    0x01: "push_button",
+    0x02: "absolute_input",
+    0x03: "occupancy_sensor",
+    0x04: "light_sensor",
+    0x05: "colour_sensor",
+    0x06: "general_purpose_sensor",
+    0x07: "thermal_sensor",
+}
+
+INSTANCE_EVENT_SEMANTICS: dict[int, dict[int, str]] = {
+    0x00: {
+        0x8C: "input_value_notification",
+        0x8D: "input_value_latch_notification",
+    },
+    0x03: {
+        0x8C: "occupancy_event_active",
+        0x8D: "occupancy_event_cleared",
+    },
+    0x04: {
+        0x8C: "light_level_changed",
+        0x8D: "light_level_latched",
+    },
+}
+
+INSTANCE_QUERY_OPCODE_MAP: dict[int, str] = {
+    0x80: "query_instance_type",
+    0x84: "query_event_priority",
+    0x8B: "query_event_scheme",
+    0x90: "query_event_filter_0_7",
+    0x91: "query_event_filter_8_15",
+    0x92: "query_event_filter_16_23",
+}
+
+
+@dataclass(slots=True)
+class InstanceState:
+    instance_type: int | None = None
+    event_scheme: int | None = None
+    event_filter: int | None = None
+    event_priority: int | None = None
 
 
 @dataclass(slots=True)
@@ -12,6 +56,11 @@ class DecoderContext:
     dtr0: int | None = None
     dtr1: int | None = None
     dtr2: int | None = None
+    instances: dict[int, dict[int, InstanceState]] = field(default_factory=dict)
+
+    def ensure_instance(self, short_address: int, instance: int) -> InstanceState:
+        device = self.instances.setdefault(short_address, {})
+        return device.setdefault(instance, InstanceState())
 
 
 @dataclass(slots=True)
@@ -198,6 +247,25 @@ class DaliDecoder:
         b1 = (value >> 8) & 0xFF
         b2 = value & 0xFF
 
+        if 0xC0 <= b0 <= 0xCF and b0 != 0xC1:
+            decoded = DecodedFrame(
+                frame_class="forward24_special_or_helper",
+                name="SPECIAL / HELPER FRAME",
+                status="decoded_generic",
+                addressing=f"raw:0x{b0:02X}",
+                opcode=f"0x{b2:02X}",
+                params={
+                    "byte0": f"0x{b0:02X}",
+                    "byte1": f"0x{b1:02X}",
+                    "byte2": f"0x{b2:02X}",
+                },
+                warnings=["Special/helper 24-bit range requires dedicated command mapping"],
+                confidence=0.8,
+                semantic_level="generic",
+                semantic_reason="special_helper_range",
+            )
+            return DecodedEnvelope(decoded=decoded, expects_backward=False)
+
         if b1 == 0xFE:
             opcode_rule = _find_opcode_rule(self.spec.forward24_device_opcode, b2)
             if opcode_rule is None:
@@ -210,6 +278,8 @@ class DaliDecoder:
                     params={},
                     warnings=["Opcode not present in decoder spec"],
                     confidence=0.0,
+                    semantic_level="generic",
+                    semantic_reason="unknown_device_level_opcode",
                 )
                 return DecodedEnvelope(decoded=decoded, expects_backward=False)
 
@@ -229,12 +299,95 @@ class DaliDecoder:
                 },
                 warnings=["Send twice recommended"] if opcode_rule.send_twice else [],
                 confidence=1.0 if opcode_rule.status == "decoded" else 0.65,
+                semantic_level="generic",
             )
             return DecodedEnvelope(decoded=decoded, expects_backward=opcode_rule.expects_backward)
 
+        if (b0 & 0x01) == 0x01 and b0 <= 0x7F:
+            short_address = b0 >> 1
+            instance = b1
+            semantic_query = INSTANCE_QUERY_OPCODE_MAP.get(b2)
+            if semantic_query is not None:
+                decoded = DecodedFrame(
+                    frame_class="forward24_instance_command_or_query",
+                    name="INSTANCE QUERY",
+                    status="decoded_generic",
+                    addressing=f"short:{short_address}",
+                    opcode=f"0x{b2:02X}",
+                    params={
+                        "source_short_address": short_address,
+                        "instance": instance,
+                        "instance_opcode": f"0x{b2:02X}",
+                        "semantic_query": semantic_query,
+                    },
+                    warnings=[],
+                    confidence=0.8,
+                    semantic_level="generic",
+                    semantic_reason="instance_query_requires_backward",
+                )
+                return DecodedEnvelope(decoded=decoded, expects_backward=True)
+
+            instance_state = context.ensure_instance(short_address, instance)
+            semantic_level: SemanticLevel = "generic"
+            semantic_reason: str | None = "missing_instance_type"
+            semantic_name = "input_notification"
+            status: DecodeStatus = "decoded_generic"
+            confidence = 0.8
+
+            if instance_state.instance_type is not None:
+                semantic_level = "instance_aware"
+                semantic_reason = "missing_event_scheme"
+                semantic_name = INSTANCE_TYPE_NAMES.get(instance_state.instance_type, "instance_type_known")
+                if instance_state.event_scheme is not None:
+                    semantic_level = "full"
+                    semantic_reason = None
+                    semantic_name = INSTANCE_EVENT_SEMANTICS.get(instance_state.instance_type, {}).get(
+                        b2, "instance_event_unmapped"
+                    )
+
+            decoded = DecodedFrame(
+                frame_class="forward24_input_notification",
+                name="INPUT NOTIFICATION",
+                status=status,
+                addressing=f"short:{short_address}",
+                opcode=f"0x{b2:02X}",
+                params={
+                    "source_short_address": short_address,
+                    "instance": instance,
+                    "event_info": f"0x{b2:02X}",
+                    "instance_type": (
+                        f"0x{instance_state.instance_type:02X}"
+                        if instance_state.instance_type is not None
+                        else None
+                    ),
+                    "event_scheme": (
+                        f"0x{instance_state.event_scheme:02X}"
+                        if instance_state.event_scheme is not None
+                        else None
+                    ),
+                    "event_filter": (
+                        f"0x{instance_state.event_filter:02X}"
+                        if instance_state.event_filter is not None
+                        else None
+                    ),
+                    "event_priority": (
+                        f"0x{instance_state.event_priority:02X}"
+                        if instance_state.event_priority is not None
+                        else None
+                    ),
+                    "backward_expected": False,
+                },
+                warnings=[],
+                confidence=confidence,
+                semantic_level=semantic_level,
+                semantic_name=semantic_name,
+                semantic_reason=semantic_reason,
+            )
+            return DecodedEnvelope(decoded=decoded, expects_backward=False)
+
         decoded = DecodedFrame(
-            frame_class="forward24_instance_or_event",
-            name="INSTANCE COMMAND / EVENT",
+            frame_class="forward24_instance_command_or_query",
+            name="INSTANCE COMMAND / QUERY",
             status="ambiguous",
             addressing=_decode_control_device_address(b0),
             opcode=f"0x{b2:02X}",
@@ -244,6 +397,8 @@ class DaliDecoder:
             },
             warnings=["Needs instance type + sender context for exact interpretation"],
             confidence=0.45,
+            semantic_level="generic",
+            semantic_reason="ambiguous_instance_or_query",
         )
         return DecodedEnvelope(decoded=decoded, expects_backward=False)
 
