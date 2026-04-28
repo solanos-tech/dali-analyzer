@@ -75,7 +75,12 @@ class SourceRegistry:
 
     def snapshot_simulated_log(self, log_name: str, limit: int) -> list[RawFrame]:
         frames = self.load_simulated_log(log_name)
-        return [to_raw_frame(frame, source="simulated_log", log_name=log_name) for frame in frames[:limit]]
+        if limit >= len(frames):
+            selected = frames
+        else:
+            start = _best_forward24_window_start(frames, limit)
+            selected = frames[start : start + limit]
+        return [to_raw_frame(frame, source="simulated_log", log_name=log_name) for frame in selected]
 
     async def stream_serial(self) -> AsyncIterator[RawFrame]:
         reader = SerialSourceReader(port=self.config.serial_port, baudrate=self.config.serial_baudrate)
@@ -228,3 +233,27 @@ def _bit_length_for_direction(direction: str) -> int:
     if direction in {"rx_backward", "tx_backward_local"}:
         return 8
     return 0
+
+
+def _best_forward24_window_start(frames: list[ParsedSnifferFrame], window_size: int) -> int:
+    total = len(frames)
+    if total <= window_size:
+        return 0
+
+    current = sum(1 for frame in frames[:window_size] if frame.direction == "rx_forward24")
+    best_count = current
+    best_start = 0
+
+    for start in range(1, total - window_size + 1):
+        leaving = frames[start - 1]
+        entering = frames[start + window_size - 1]
+        if leaving.direction == "rx_forward24":
+            current -= 1
+        if entering.direction == "rx_forward24":
+            current += 1
+
+        if current > best_count or (current == best_count and start > best_start):
+            best_count = current
+            best_start = start
+
+    return best_start
