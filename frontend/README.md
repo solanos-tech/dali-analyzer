@@ -33,5 +33,5 @@ npm run build
 ## Version and Release
 
 - Source of frontend version: `frontend/package.json` (`version`)
-- Release tag pattern: `frontend-vX.Y.Z`
+- Release tag pattern: `vX.Y.Z` (unified release)
 - Successful release workflow should be followed by auto-log docs PR updates.

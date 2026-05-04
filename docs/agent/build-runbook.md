@@ -10,9 +10,7 @@
 ## Run Backend Locally
 
 ```powershell
-cd backend
-uv sync
-uv run uvicorn app.main:app --reload
+make dev-up
 ```
 
 Default URL: `http://127.0.0.1:8000`.
@@ -38,9 +36,19 @@ Build artifacts are generated in `backend/dist/`.
 ## Run Frontend Locally
 
 ```powershell
-cd frontend
-npm install --no-audit --no-fund
-npm run dev
+make dev-check
+make dev-down
+```
+
+## Environment and Release Commands
+
+```powershell
+make env-use ENV=dev
+make env-show
+make deploy
+make release-prepare VERSION=X.Y.Z
+make release-publish VERSION=X.Y.Z
+make release-status VERSION=X.Y.Z
 ```
 
 ## Branch Hygiene Checklist

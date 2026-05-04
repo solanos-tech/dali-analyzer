@@ -29,12 +29,15 @@ For every release candidate or release-related change:
 2. Update frontend version in `frontend/package.json` (`version`).
 3. Keep both versions aligned unless the user explicitly asks for separate version lines.
 4. Update `CHANGELOG.md` with release notes before tagging.
-5. Use release tags that match workflows exactly:
-   - Backend release tag: `backend-vX.Y.Z`
-   - Frontend release tag: `frontend-vX.Y.Z`
-   - Optional informational tag: `vX.Y.Z` (does not trigger release workflows)
+5. Use unified release tag: `vX.Y.Z` (must point to `main`).
+6. Use operational commands:
+   - `make env-use ENV=dev|prod`
+   - `make deploy` (dev context only)
+   - `make release-prepare VERSION=X.Y.Z`
+   - `make release-publish VERSION=X.Y.Z`
+   - `make release-status VERSION=X.Y.Z`
 
-Tags not matching these patterns are invalid for release automation.
+Tags not matching `vX.Y.Z` are invalid for release automation.
 
 ## Build and Verification
 
@@ -57,14 +60,12 @@ npm run build
 Optional local run:
 
 ```powershell
-cd backend
-uv sync
-uv run uvicorn app.main:app --reload
+make dev-up
 ```
 
 ```powershell
-cd frontend
-npm run dev
+make dev-check
+make dev-down
 ```
 
 ## Safety and Invariants
@@ -97,6 +98,7 @@ npm run dev
 - `docs/agent/interrupt-flow.md`
 - `docs/agent/feature-flags.md`
 - `docs/agent/release-versioning.md`
+- `Makefile`
 - `docs/agent/knowledge-log.md`
 - `docs/agent/decision-log.md`
 - `docs/test/README.md`

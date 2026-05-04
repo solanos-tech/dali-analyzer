@@ -1,0 +1,81 @@
+name: Unified Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: prod
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify tag points to main history
+        run: |
+          git fetch origin main
+          git merge-base --is-ancestor "$GITHUB_SHA" "origin/main"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci --no-audit --no-fund
+        working-directory: frontend
+
+      - name: Build frontend
+        run: npm run build
+        working-directory: frontend
+
+      - name: Create frontend release archive
+        run: tar -czf frontend-dist.tar.gz dist
+        working-directory: frontend
+
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Add uv to PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Sync backend dependencies
+        run: uv sync
+        working-directory: backend
+
+      - name: Build backend package
+        run: uv build
+        working-directory: backend
+
+      - name: Validate version parity
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          BACKEND_VERSION="$(python3 -c "import tomllib; print(tomllib.load(open('backend/pyproject.toml','rb'))['project']['version'])")"
+          FRONTEND_VERSION="$(node -p "require('./frontend/package.json').version")"
+          test "$TAG_VERSION" = "$BACKEND_VERSION"
+          test "$TAG_VERSION" = "$FRONTEND_VERSION"
+
+      - name: Create GitHub release with frontend and backend assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            backend/dist/* \
+            frontend/frontend-dist.tar.gz \
+            --title "Release ${{ github.ref_name }}" \
+            --notes "Unified backend and frontend release for ${{ github.ref_name }}"
