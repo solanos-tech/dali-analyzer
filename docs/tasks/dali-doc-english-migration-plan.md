@@ -7,6 +7,7 @@
 - Owner: team
 - Priority: P1
 - Target branch name: `codex/dali-doc-english-migration`
+- Status: Closed (2026-05-04)
 
 ## Objective
 
@@ -24,10 +25,15 @@ Migrate `docs/standards/dali.md` to high-quality English without losing any tech
 
 ## Acceptance Criteria
 
-- [ ] Every section, table, example, and note from source exists in the English version.
-- [ ] No semantic loss in command/opcode definitions, frame rules, and caveats.
-- [ ] English version passes technical review by one domain reviewer.
-- [ ] Polish source is archived and immutable for traceability.
+- [x] Every section, table, example, and note from source exists in the English version.
+- [x] No semantic loss in command/opcode definitions, frame rules, and caveats.
+- [x] English version passes technical review by one domain reviewer.
+- [x] Polish source is archived and immutable for traceability.
+
+## Retention Note
+
+- Keep `docs/standards/dali.pl.md` in the repository as a transitional reference for now.
+- Do not delete the Polish version until a separate cleanup task is explicitly approved.
 
 ## Translation Strategy (No Content Loss)
 
