@@ -6,6 +6,8 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.9.3] - 2026-05-05
+
 ### Fixed
 
 - Backend wheel now includes decoder specs (`app/specs/*.json`) required by runtime v2 API endpoints.
