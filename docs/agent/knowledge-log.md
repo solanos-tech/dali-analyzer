@@ -16,6 +16,21 @@ Chronological lessons learned from merged pull requests and completed release cy
 ## Entries
 
 - Date (UTC): 2026-05-05
+- Event key: runtime-release-zip-gating-and-wheel-spec-hotfix
+- Trigger: Release cycle `v0.9.1` to `v0.9.3` after introducing runtime/source ZIP packaging and blocking acceptance gates.
+- What changed: Unified release now creates draft release assets (`runtime-vX.Y.Z.zip`, `source-vX.Y.Z.zip`), runs Linux+Windows acceptance by downloading runtime ZIP, and publishes only on success. Runtime launchers were hardened for Windows stop idempotency, and backend wheel packaging was fixed to include decoder specs (`app/specs/*.json`).
+- What improved: Runtime package became reproducible and cross-platform launchable; acceptance catches packaging/runtime faults before final publish; backend `500` failures from missing specs in wheel were eliminated.
+- What failed or caused friction: Initial runtime release passed `/health` but failed v2 API with `500` because wheel omitted `app/specs/*.json`; Windows acceptance stop initially produced false failures when tracked PID had already exited.
+- Recommendation for next cycle: Keep wheel-installed runtime smoke checks on v2 endpoints (`/api/v2/logs`) as hard gate; retain idempotent launcher stop semantics and draft-first release model.
+- Related links:
+  - `.github/workflows/unified-release.yml`
+  - `.github/workflows/backend-ci.yml`
+  - `packaging/runtime/launchers/stop-windows.ps1`
+  - `backend/pyproject.toml`
+  - `scripts/release/build-runtime-package.sh`
+  - `scripts/release/build-source-package.sh`
+
+- Date (UTC): 2026-05-05
 - Event key: cicd-docs-launchers-and-sandbox-validation
 - Trigger: End-of-day hardening and verification before PR merge.
 - What changed: Added complete CI/CD documentation for humans, introduced Windows launchers, hardened Linux/Windows startup scripts with readiness checks, and synchronized/tested current branch in `/tmp` sandboxes.

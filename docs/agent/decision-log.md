@@ -15,6 +15,18 @@ Operational decision register updated after merged pull requests and successful 
 ## Entries
 
 - Date (UTC): 2026-05-05
+- Event key: runtime-release-draft-gate-and-wheel-spec-contract
+- Trigger: Runtime package verification and failed post-release diagnostics on `v0.9.2`.
+- Decision: Keep release flow as draft-first with blocking Linux/Windows acceptance before final publish; enforce backend wheel contract to include decoder specs (`app/specs/*.json`) and keep wheel-runtime smoke endpoint check in CI (`/api/v2/logs`).
+- Rationale: Runtime release must be self-sufficient when started from ZIP package; missing wheel data files or non-idempotent shutdown logic can pass basic health but still break operational API behavior.
+- Impact: Release confidence increased for GIS runtime usage, reduced false-positive acceptance failures on Windows, and prevented recurrence of runtime `500` from missing decoder specs.
+- Related links:
+  - `.github/workflows/unified-release.yml`
+  - `.github/workflows/backend-ci.yml`
+  - `backend/pyproject.toml`
+  - `packaging/runtime/launchers/stop-windows.ps1`
+
+- Date (UTC): 2026-05-05
 - Event key: launcher-reliability-and-simulated-log-baseline
 - Trigger: Manual sandbox validation revealed silent startup failure patterns and missing default simulated log asset.
 - Decision: Enforce readiness-checked launchers on both Linux and Windows, and keep `docs/standards/sniffer_log_example.log` as a versioned baseline fixture for simulated mode.

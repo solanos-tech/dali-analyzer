@@ -29,6 +29,15 @@ Invalid release tags (do not trigger expected workflows):
 - `backend-v0.1.6`
 - `frontend-v0.1.6`
 
+## Release Asset Contract
+
+Unified release publishes exactly two archives:
+
+- `runtime-vX.Y.Z.zip` - runnable package (launchers + backend wheel + frontend dist + runtime config/log fixture)
+- `source-vX.Y.Z.zip` - source archive from release ref
+
+Release publish is draft-first and finalizes only after Linux and Windows acceptance jobs pass.
+
 ## Release Checklist
 
 1. Confirm branch + PR workflow is used.

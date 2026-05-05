@@ -5,6 +5,8 @@
 - `backend/` - FastAPI application, packaging, and backend tests
 - `frontend/` - React + Vite application
 - `.github/workflows/` - CI and release pipelines
+- `packaging/runtime/` - Runtime package templates (launchers, config, README)
+- `scripts/release/` - Runtime/source archive build scripts for release workflow
 - `docs/` - agent-first project documentation
 
 ## Backend
@@ -30,3 +32,5 @@
   - `.github/workflows/deploy-dev.yml`
 - Release workflow:
   - `.github/workflows/unified-release.yml`
+  - Draft-first release with blocking acceptance (Linux + Windows) before publish
+  - Release assets: `runtime-vX.Y.Z.zip`, `source-vX.Y.Z.zip`
