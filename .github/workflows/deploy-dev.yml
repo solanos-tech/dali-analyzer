@@ -1,26 +1,25 @@
-name: Integration Smoke
+name: Deploy Dev
 
 on:
-  pull_request:
-    paths:
-      - "backend/**"
-      - "frontend/**"
-      - ".github/workflows/integration-smoke.yml"
   push:
     branches: [ main ]
     paths:
       - "backend/**"
       - "frontend/**"
-      - ".github/workflows/integration-smoke.yml"
+      - ".github/workflows/deploy-dev.yml"
+
+permissions:
+  contents: read
 
 concurrency:
-  group: integration-smoke-${{ github.ref }}
+  group: deploy-dev-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  integration-smoke:
+  deploy-dev:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    environment: dev
 
     steps:
       - name: Checkout
@@ -37,9 +36,15 @@ jobs:
         run: npm ci --no-audit --no-fund
         working-directory: frontend
 
-      - name: Build frontend
+      - name: Build frontend artifact
         run: npm run build
         working-directory: frontend
+
+      - name: Upload frontend dev artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dev-dist
+          path: frontend/dist
 
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -51,20 +56,16 @@ jobs:
         run: uv sync
         working-directory: backend
 
-      - name: Start backend
+      - name: Build backend artifact
+        run: uv build
+        working-directory: backend
+
+      - name: Upload backend dev artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-dev-dist
+          path: backend/dist
+
+      - name: Deploy dev simulation
         run: |
-          uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 &
-          echo $! > uvicorn.pid
-          sleep 5
-        working-directory: backend
-
-      - name: Smoke health
-        run: curl --fail http://127.0.0.1:8000/health
-
-      - name: Smoke frames
-        run: curl --fail "http://127.0.0.1:8000/api/frames?source=mock"
-
-      - name: Stop backend
-        if: always()
-        run: kill $(cat uvicorn.pid) || true
-        working-directory: backend
+          echo "Dev deployment gate passed: frontend and backend artifacts are ready."

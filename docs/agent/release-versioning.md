@@ -14,26 +14,20 @@ If separate backend/frontend versions are required, this must be explicitly requ
 
 ## Tag Rule
 
-Release workflows are tag-driven and require exact patterns:
+Release workflow is tag-driven and requires exact pattern:
 
-- Backend release trigger: `backend-vX.Y.Z`
-- Frontend release trigger: `frontend-vX.Y.Z`
-
-Optional informational tag:
-
-- `vX.Y.Z` (does not trigger release workflows)
+- Unified release trigger: `vX.Y.Z`
+- Tag must point to commit reachable from `main`
 
 Examples:
 
-- `backend-v0.1.6`
-- `frontend-v0.1.6`
-- `v0.1.6` (informational only)
+- `v0.1.6`
 
 Invalid release tags (do not trigger expected workflows):
 
 - `v.0.1.6`
-- `backend-0.1.6`
-- `frontend_0.1.6`
+- `backend-v0.1.6`
+- `frontend-v0.1.6`
 
 ## Release Checklist
 
@@ -41,10 +35,12 @@ Invalid release tags (do not trigger expected workflows):
 2. Bump versions in backend and frontend.
 3. Update `CHANGELOG.md`.
 4. Merge PR to `main`.
-5. Create and push release tags:
-   - `backend-vX.Y.Z`
-   - `frontend-vX.Y.Z`
-6. Verify release workflows completed successfully.
-7. Ensure follow-up docs PR is generated for:
+5. Run preflight:
+   - `make release-prepare VERSION=X.Y.Z`
+6. Publish release:
+   - `make release-publish VERSION=X.Y.Z`
+7. Verify release status:
+   - `make release-status VERSION=X.Y.Z`
+8. Ensure follow-up docs PR is generated for:
    - `docs/agent/knowledge-log.md`
    - `docs/agent/decision-log.md`

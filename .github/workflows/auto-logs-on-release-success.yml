@@ -3,8 +3,7 @@ name: Auto Logs on Release Success
 on:
   workflow_run:
     workflows:
-      - Backend Release
-      - Frontend Release
+      - Unified Release
     types: [completed]
   push:
     paths:
@@ -65,7 +64,7 @@ jobs:
             printf '\n- Date (UTC): %s\n' "${DATE_UTC}"
             printf -- '- Event key: %s\n' "${EVENT_KEY}"
             printf -- '- Trigger: successful release workflow\n'
-            printf -- '- Decision: preserve current release tag policy and continue post-release logging\n'
+            printf -- '- Decision: preserve unified release tag policy and continue post-release logging\n'
             printf -- '- Rationale: successful release events should leave decision traces for future cycles\n'
             printf -- '- Impact: improves reproducibility and release diagnostics\n'
             printf -- '- Related links: workflow %s (%s)\n' "${WORKFLOW_NAME}" "${WORKFLOW_URL}"

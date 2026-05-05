@@ -4,20 +4,38 @@ This repository is prepared for iterative human + AI collaboration.
 
 ## Start Here
 
-1. Run backend API.
-2. Run frontend UI.
-3. Verify `/health` and live frames in the browser.
+1. Select environment context.
+2. Run local dev stack or deploy path.
+3. Use release commands when publishing from `main`.
 
-## Run Backend
+## Operational Commands
 
-- Backend: `cd backend && uv sync && uv run uvicorn app.main:app --reload`
+- Select active environment context (`dev` or `prod`): `make env-use ENV=dev|prod`
+- Show active environment context (defaults to `dev` when not set): `make env-show`
+- Trigger deploy contract for `dev` context (no local deployment is executed): `make deploy`
+- Validate release preconditions (clean `main`, versions, changelog, tag availability): `make release-prepare VERSION=X.Y.Z`
+- Publish release tag `vX.Y.Z` (runs preflight first and pushes tag): `make release-publish VERSION=X.Y.Z`
+- Check release workflow and GitHub release status for `vX.Y.Z`: `make release-status VERSION=X.Y.Z`
+
+Detailed behavior and step-by-step flows for humans: `docs/ci-cd.md` (section "6. Human Command Reference").
+
+## Local Dev Stack
+
+- Start backend then frontend (parallel runtime): `make dev-up`
+- Stop local stack: `make dev-down`
+- Smoke local stack: `make dev-check`
+
+One-script launcher equivalents:
+
+- Linux/macOS start: `./scripts/ops/dev-up.sh`
+- Linux/macOS stop: `./scripts/ops/dev-down.sh`
+- Windows start (PowerShell): `.\scripts\ops\dev-up.ps1`
+- Windows stop (PowerShell): `.\scripts\ops\dev-down.ps1`
+
+Launchers run backend/frontend as background processes and then return terminal control.  
+If startup fails, launcher now exits with explicit error and prints relevant log tail.
 
 Backend URL: `http://127.0.0.1:8000`
-
-## Run Frontend
-
-- Frontend: `cd frontend && npm install --no-audit --no-fund && npm run dev`
-
 Frontend URL: `http://127.0.0.1:5173`
 
 ## Runtime Config
@@ -28,9 +46,8 @@ Frontend URL: `http://127.0.0.1:5173`
 
 ## Release Tags
 
-- Backend release trigger tag: `backend-vX.Y.Z`
-- Frontend release trigger tag: `frontend-vX.Y.Z`
-- Informational tag only: `vX.Y.Z`
+- Release trigger tag: `vX.Y.Z` (must point to commit on `main`)
+- Single release contains frontend and backend artifacts
 
 ## Automatic Logs
 
@@ -43,4 +60,5 @@ After merged PRs and successful release workflows, automation creates follow-up 
 
 - [agents.md](agents.md) - agent runtime entrypoint and mandatory branch/PR workflow
 - [docs/README.md](docs/README.md) - documentation map and structure
+- [docs/ci-cd.md](docs/ci-cd.md) - CI/CD pipelines and policy gates overview
 - [CHANGELOG.md](CHANGELOG.md) - change history

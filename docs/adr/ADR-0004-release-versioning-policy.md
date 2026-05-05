@@ -15,13 +15,12 @@ Define repository-level release policy:
    - `backend/pyproject.toml` version
    - `frontend/package.json` version
 2. Keep versions aligned by default (`X.Y.Z`).
-3. Use strict release tags:
-   - Backend: `backend-vX.Y.Z`
-   - Frontend: `frontend-vX.Y.Z`
-4. Treat `vX.Y.Z` as informational only unless workflows are explicitly changed.
+3. Use a single strict release tag:
+   - Unified release: `vX.Y.Z`
+4. Release tag must point to a commit reachable from `main`.
 
 ## Consequences
 
-- Release automation becomes predictable.
-- Build/release trigger failures due to tag format are reduced.
+- Release automation becomes predictable with one release artifact set.
+- Build/release trigger failures due to tag mismatch are reduced.
 - Version drift between backend and frontend is controlled by default.

@@ -22,5 +22,11 @@
 
 ## CI and Release
 
-- CI workflow: `.github/workflows/backend-ci.yml`
-- Release workflow: `.github/workflows/backend-release.yml`
+- CI workflows:
+  - `.github/workflows/backend-ci.yml`
+  - `.github/workflows/frontend-ci.yml`
+  - `.github/workflows/integration-smoke.yml`
+- Deployment workflow:
+  - `.github/workflows/deploy-dev.yml`
+- Release workflow:
+  - `.github/workflows/unified-release.yml`

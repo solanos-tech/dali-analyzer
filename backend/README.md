@@ -42,5 +42,5 @@ uv run mypy app
 ## Version and Release
 
 - Source of backend version: `backend/pyproject.toml` (`[project].version`)
-- Release tag pattern: `backend-vX.Y.Z`
+- Release tag pattern: `vX.Y.Z` (unified release)
 - Successful release workflow should be followed by auto-log docs PR updates.

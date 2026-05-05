@@ -30,7 +30,9 @@ coverage/
 
 # Build artifacts
 *.log
+!docs/standards/sniffer_log_example.log
 *.tmp
+.ops/
 
 # Frontend
 frontend/dist/
