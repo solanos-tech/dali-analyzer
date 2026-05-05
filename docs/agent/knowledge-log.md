@@ -39,3 +39,12 @@ Chronological lessons learned from merged pull requests and completed release cy
 - Related links:
   - `docs/tasks/repo-hygiene-closeout-2026-04-28.md`
   - `docs/tasks/dali-doc-english-migration-plan.md`
+
+- Date (UTC): 2026-05-05T16:03:44Z
+- Event key: release-25387479521-a84434813dff402e5e3fed39f5721b60e9b524d4
+- Trigger: successful release workflow
+- What changed: Unified Release completed successfully
+- What improved: release cycle executed end-to-end with traceable outcome
+- What failed or caused friction: none recorded by automation
+- Recommendation for next cycle: keep version bumps and tags aligned with release workflows
+- Related links: https://github.com/prudek/dali-analyzer/actions/runs/25387479521, commit a84434813dff402e5e3fed39f5721b60e9b524d4, ref v0.9.3
