@@ -25,6 +25,13 @@ Detailed behavior and step-by-step flows for humans: `docs/ci-cd.md` (section "6
 - Stop local stack: `make dev-down`
 - Smoke local stack: `make dev-check`
 
+One-script launcher equivalents:
+
+- Linux/macOS start: `./scripts/ops/dev-up.sh`
+- Linux/macOS stop: `./scripts/ops/dev-down.sh`
+- Windows start (PowerShell): `.\scripts\ops\dev-up.ps1`
+- Windows stop (PowerShell): `.\scripts\ops\dev-down.ps1`
+
 Backend URL: `http://127.0.0.1:8000`
 Frontend URL: `http://127.0.0.1:5173`
 
