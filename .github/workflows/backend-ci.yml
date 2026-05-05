@@ -111,6 +111,9 @@ jobs:
       - name: Call frames endpoint
         run: curl --fail "http://127.0.0.1:8000/api/frames?source=mock"
 
+      - name: Call v2 logs endpoint (spec/runtime smoke)
+        run: curl --fail "http://127.0.0.1:8000/api/v2/logs"
+
       - name: Stop API
         if: always()
         run: kill $(cat uvicorn.pid) || true
