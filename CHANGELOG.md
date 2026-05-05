@@ -6,6 +6,11 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 
 ## [Unreleased]
 
+### Fixed
+
+- Backend wheel now includes decoder specs (`app/specs/*.json`) required by runtime v2 API endpoints.
+- Backend CI package inspect now verifies `/api/v2/logs` against wheel-installed runtime.
+
 ## [0.9.2] - 2026-05-05
 
 ### Fixed

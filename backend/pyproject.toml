@@ -17,6 +17,9 @@ dali-analyzer = "app.main:run"
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.package-data]
+"app" = ["specs/*.json"]
+
 [dependency-groups]
 dev = [
     "httpx>=0.28.1",
