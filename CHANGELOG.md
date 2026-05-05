@@ -8,6 +8,13 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 
 ### Added
 
+- Added human-readable CI/CD and policy documentation with Mermaid diagrams:
+  - `docs/ci-cd.md`
+- Added Windows one-script local launcher support:
+  - `scripts/ops/dev-up.ps1`
+  - `scripts/ops/dev-down.ps1`
+- Added default simulated sniffer log file required by frontend v2 simulated mode:
+  - `docs/standards/sniffer_log_example.log`
 - Added frontend-backend integration in React with API fetching, source switching, and 1-second live polling.
 - Added frontend API layer and config support via `VITE_API_BASE_URL` and `VITE_API_PROXY_TARGET`.
 - Added frontend CI workflow: `.github/workflows/frontend-ci.yml`.
@@ -42,6 +49,15 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 
 ### Changed
 
+- Updated root README and docs map to include CI/CD overview and launcher usage for Linux and Windows.
+- Updated launcher scripts to fail fast with explicit diagnostics when startup requirements are missing or services are not ready:
+  - `scripts/ops/dev-up.sh`
+  - `scripts/ops/dev-up.ps1`
+- Updated Linux startup/check probes to support both `curl` and `wget`:
+  - `scripts/ops/dev-up.sh`
+  - `scripts/ops/dev-check.sh`
+- Updated `docs/agent/repo-map.md` CI/CD section to match current workflow files.
+- Updated `.gitignore` to keep `docs/standards/sniffer_log_example.log` versioned.
 - Converted backend to API-only mode by removing embedded HTML UI routes.
 - Added explicit response model and CORS support in backend API.
 - Updated backend CI smoke checks to validate frames endpoint.
