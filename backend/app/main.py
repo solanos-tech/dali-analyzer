@@ -9,7 +9,7 @@ from typing import AsyncIterator, Literal
 import uvicorn
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 
 from app.decoder import (
@@ -59,6 +59,33 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+
+
+def _resolve_frontend_dist_dir() -> Path | None:
+    configured = os.getenv("FRONTEND_DIST_DIR")
+    if not configured:
+        return None
+
+    candidate = Path(configured).resolve()
+    index_file = candidate / "index.html"
+    if not index_file.exists():
+        return None
+    return candidate
+
+
+def _resolve_runtime_config_dir() -> Path | None:
+    configured = os.getenv("RUNTIME_CONFIG_DIR")
+    if not configured:
+        return None
+
+    candidate = Path(configured).resolve()
+    if not candidate.exists():
+        return None
+    return candidate
+
+
+FRONTEND_DIST_DIR = _resolve_frontend_dist_dir()
+RUNTIME_CONFIG_DIR = _resolve_runtime_config_dir()
 
 
 def _spec_paths() -> tuple[Path, Path]:
@@ -246,6 +273,43 @@ def reload_specs() -> dict[str, str]:
     app.state.decoder = decoder
     app.state.pipeline = pipeline
     return {"status": "reloaded"}
+
+
+@app.get("/config/runtime-config.json", include_in_schema=False)
+def get_runtime_config() -> dict[str, str]:
+    if RUNTIME_CONFIG_DIR is not None:
+        config_file = RUNTIME_CONFIG_DIR / "runtime-config.json"
+        if config_file.exists():
+            return json.loads(config_file.read_text(encoding="utf-8"))
+    return {"apiBaseUrl": ""}
+
+
+@app.get("/", include_in_schema=False)
+def serve_frontend_index() -> FileResponse:
+    if FRONTEND_DIST_DIR is None:
+        raise HTTPException(status_code=404, detail="Frontend bundle not available")
+    return FileResponse(FRONTEND_DIST_DIR / "index.html")
+
+
+@app.get("/{full_path:path}", include_in_schema=False)
+def serve_frontend_or_asset(full_path: str) -> FileResponse:
+    if FRONTEND_DIST_DIR is None:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    if full_path.startswith("api/") or full_path == "health":
+        raise HTTPException(status_code=404, detail="Not found")
+
+    safe_root = FRONTEND_DIST_DIR.resolve()
+    candidate = (safe_root / full_path).resolve()
+    try:
+        candidate.relative_to(safe_root)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail="Not found") from exc
+
+    if candidate.exists() and candidate.is_file():
+        return FileResponse(candidate)
+
+    return FileResponse(FRONTEND_DIST_DIR / "index.html")
 
 
 def run() -> None:

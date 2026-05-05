@@ -5,14 +5,14 @@ import type {
   SerialConnectionStatus,
   SerialPortInfo,
 } from '../types'
-
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
+import { resolveApiBaseUrl } from '../config/runtime'
 
 const buildUrl = (path: string) => {
-  if (!API_BASE_URL) {
+  const apiBaseUrl = resolveApiBaseUrl()
+  if (!apiBaseUrl) {
     return path
   }
-  return `${API_BASE_URL}${path}`
+  return `${apiBaseUrl}${path}`
 }
 
 const buildQuery = (params: Record<string, string | number | undefined>) => {
