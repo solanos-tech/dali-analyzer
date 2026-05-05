@@ -10,12 +10,14 @@ This repository is prepared for iterative human + AI collaboration.
 
 ## Operational Commands
 
-- Select active environment: `make env-use ENV=dev|prod`
-- Show active environment: `make env-show`
-- Trigger deploy contract (dev only): `make deploy`
-- Release preflight checks: `make release-prepare VERSION=X.Y.Z`
-- Publish release tag: `make release-publish VERSION=X.Y.Z`
-- Check release status: `make release-status VERSION=X.Y.Z`
+- Select active environment context (`dev` or `prod`): `make env-use ENV=dev|prod`
+- Show active environment context (defaults to `dev` when not set): `make env-show`
+- Trigger deploy contract for `dev` context (no local deployment is executed): `make deploy`
+- Validate release preconditions (clean `main`, versions, changelog, tag availability): `make release-prepare VERSION=X.Y.Z`
+- Publish release tag `vX.Y.Z` (runs preflight first and pushes tag): `make release-publish VERSION=X.Y.Z`
+- Check release workflow and GitHub release status for `vX.Y.Z`: `make release-status VERSION=X.Y.Z`
+
+Detailed behavior and step-by-step flows for humans: `docs/ci-cd.md` (section "6. Human Command Reference").
 
 ## Local Dev Stack
 

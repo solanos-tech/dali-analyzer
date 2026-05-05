@@ -114,3 +114,39 @@ Current GitHub settings relevant to CI/CD behavior:
 - Environments available: `dev`, `prod`.
 - Current environment protection rules: none configured (`protection_rules=[]`).
 - Branch protection and repository rulesets were not retrievable via API in this plan tier (GitHub returned HTTP 403 for those endpoints).
+
+## 6. Human Command Reference
+
+These are the commands used by humans to control environment context and release flow.
+
+| Command | When to use | What it does now |
+| --- | --- | --- |
+| `make env-use ENV=dev` | Before running dev deploy-related flow | Stores active context as `dev` in `.ops/active-env`. |
+| `make env-use ENV=prod` | Before release-related flow | Stores active context as `prod` in `.ops/active-env`. |
+| `make env-show` | Any time you need to confirm context | Prints current context. If `.ops/active-env` does not exist, returns `dev`. |
+| `make deploy` | Dev context only | Validates context. If context is `dev`, prints CI/CD deploy contract message. No local deploy action is executed. |
+| `make release-prepare VERSION=X.Y.Z` | Before publishing a release tag | Enforces: clean git tree, on `main`, semantic version format, backend/frontend version parity, `CHANGELOG.md` contains version, tag `vX.Y.Z` does not already exist, and local `main` is synced with `origin/main`. |
+| `make release-publish VERSION=X.Y.Z` | To trigger production release workflow | Re-runs `release-prepare`, then creates and pushes tag `vX.Y.Z`, which triggers `Unified Release`. |
+| `make release-status VERSION=X.Y.Z` | After publishing release tag | Shows latest `Unified Release` runs for tag `vX.Y.Z` and displays GitHub release details. |
+
+### 6.1 Dev Context Flow
+
+1. `make env-use ENV=dev`
+2. `make env-show` (optional confirmation)
+3. Merge backend/frontend changes to `main`
+4. GitHub Actions runs `Deploy Dev` on push to `main`
+5. `make deploy` can be used as a local contract check (message-only)
+
+### 6.2 Prod/Release Flow
+
+1. Ensure release commit is on `main` with aligned versions and changelog update.
+2. `make env-use ENV=prod` (context marker for operators)
+3. `make release-prepare VERSION=X.Y.Z`
+4. `make release-publish VERSION=X.Y.Z`
+5. `make release-status VERSION=X.Y.Z`
+
+### 6.3 Important Guardrail
+
+If active context is `prod`, `make deploy` fails by design with:
+
+`deploy is disabled for 'prod'. Use release-prepare and release-publish.`
