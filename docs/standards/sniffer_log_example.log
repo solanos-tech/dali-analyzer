@@ -1,0 +1,10 @@
+[2026-05-05 10:00:00.100] sniffer ts_ms=0 dir=rx_forward16 raw=0xA900
+[2026-05-05 10:00:00.130] sniffer ts_ms=30 dir=rx_backward raw=0xFF
+[2026-05-05 10:00:00.180] sniffer ts_ms=80 dir=rx_forward24 raw=0x01FE30
+[2026-05-05 10:00:00.195] sniffer ts_ms=95 dir=rx_backward raw=0x22
+[2026-05-05 10:00:00.240] sniffer ts_ms=140 dir=rx_forward24 raw=0x01FE3C
+[2026-05-05 10:00:00.255] sniffer ts_ms=155 dir=rx_backward raw=0x4C
+[2026-05-05 10:00:00.340] sniffer ts_ms=240 dir=rx_forward24 raw=0xC10300
+[2026-05-05 10:00:00.360] sniffer ts_ms=260 dir=rx_backward raw=0xFF
+[2026-05-05 10:00:00.430] sniffer ts_ms=330 dir=rx_forward24 raw=0xC105FF
+[2026-05-05 10:00:00.520] sniffer ts_ms=420 dir=rx_forward24 raw=0xFFFE1D
