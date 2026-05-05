@@ -8,6 +8,32 @@ $frontendPidFile = Join-Path $opsDir "frontend.pid"
 $backendLog = Join-Path $opsDir "backend.log"
 $frontendLog = Join-Path $opsDir "frontend.log"
 
+function Stop-FromPidFile {
+    param(
+        [string]$PidFile
+    )
+
+    if (-not (Test-Path $PidFile)) {
+        return
+    }
+
+    $pidText = (Get-Content -Path $PidFile -Raw).Trim()
+    if ($pidText) {
+        try {
+            Stop-Process -Id ([int]$pidText) -ErrorAction SilentlyContinue
+        } catch {
+            # no-op
+        }
+    }
+
+    Remove-Item -Path $PidFile -Force -ErrorAction SilentlyContinue
+}
+
+function Cleanup-StartedProcesses {
+    Stop-FromPidFile -PidFile $frontendPidFile
+    Stop-FromPidFile -PidFile $backendPidFile
+}
+
 New-Item -ItemType Directory -Path $opsDir -Force | Out-Null
 
 if (Test-Path $backendPidFile -or Test-Path $frontendPidFile) {
@@ -33,6 +59,11 @@ $backendProc.Id | Set-Content -Path $backendPidFile -Encoding ascii
 
 $backendReady = $false
 for ($i = 0; $i -lt 30; $i++) {
+    if ($backendProc.HasExited) {
+        Get-Content -Path $backendLog -Tail 40 -ErrorAction SilentlyContinue | Out-String | Write-Error
+        Cleanup-StartedProcesses
+        throw "ERROR: backend process exited before readiness check passed."
+    }
     try {
         $resp = Invoke-WebRequest -Uri "http://127.0.0.1:8000/health" -UseBasicParsing -TimeoutSec 2
         if ($resp.StatusCode -eq 200) {
@@ -45,6 +76,8 @@ for ($i = 0; $i -lt 30; $i++) {
 }
 
 if (-not $backendReady) {
+    Get-Content -Path $backendLog -Tail 40 -ErrorAction SilentlyContinue | Out-String | Write-Error
+    Cleanup-StartedProcesses
     throw "ERROR: backend failed to become healthy. Check .ops/backend.log"
 }
 
@@ -57,6 +90,30 @@ $frontendProc = Start-Process `
     -PassThru
 
 $frontendProc.Id | Set-Content -Path $frontendPidFile -Encoding ascii
+
+$frontendReady = $false
+for ($i = 0; $i -lt 45; $i++) {
+    if ($frontendProc.HasExited) {
+        Get-Content -Path $frontendLog -Tail 60 -ErrorAction SilentlyContinue | Out-String | Write-Error
+        Cleanup-StartedProcesses
+        throw "ERROR: frontend process exited before readiness check passed."
+    }
+    try {
+        $resp = Invoke-WebRequest -Uri "http://127.0.0.1:5173" -UseBasicParsing -TimeoutSec 2
+        if ($resp.StatusCode -eq 200) {
+            $frontendReady = $true
+            break
+        }
+    } catch {
+        Start-Sleep -Seconds 1
+    }
+}
+
+if (-not $frontendReady) {
+    Get-Content -Path $frontendLog -Tail 60 -ErrorAction SilentlyContinue | Out-String | Write-Error
+    Cleanup-StartedProcesses
+    throw "ERROR: frontend failed to become ready on http://127.0.0.1:5173"
+}
 
 Write-Output "Backend: http://127.0.0.1:8000"
 Write-Output "Frontend: http://127.0.0.1:5173"

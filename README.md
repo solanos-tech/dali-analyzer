@@ -32,6 +32,9 @@ One-script launcher equivalents:
 - Windows start (PowerShell): `.\scripts\ops\dev-up.ps1`
 - Windows stop (PowerShell): `.\scripts\ops\dev-down.ps1`
 
+Launchers run backend/frontend as background processes and then return terminal control.  
+If startup fails, launcher now exits with explicit error and prints relevant log tail.
+
 Backend URL: `http://127.0.0.1:8000`
 Frontend URL: `http://127.0.0.1:5173`
 
