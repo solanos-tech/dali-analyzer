@@ -23,14 +23,19 @@ flowchart TD
   O --> P[Verify tag commit is in main history]
   P --> Q[Build frontend + backend]
   Q --> R[Validate version parity: tag == backend == frontend]
-  R --> S[Create GitHub Release assets]
+  R --> S[Build runtime/source ZIP assets]
+  S --> T[Create or update draft GitHub Release]
+  T --> U[Acceptance Linux: download ZIP, unzip, start, health, stop]
+  T --> V[Acceptance Windows: download ZIP, unzip, start, health, stop]
+  U --> W[Publish draft as final release]
+  V --> W
 
-  T[PR merged to main] --> U[Auto Logs on PR Merge]
-  U --> V[Docs-only follow-up PR for knowledge/decision logs]
+  X[PR merged to main] --> Y[Auto Logs on PR Merge]
+  Y --> Z[Docs-only follow-up PR for knowledge/decision logs]
 
-  S --> W[Unified Release success]
-  W --> X[Auto Logs on Release Success]
-  X --> Y[Docs-only follow-up PR for knowledge/decision logs]
+  W --> AA[Unified Release success]
+  AA --> AB[Auto Logs on Release Success]
+  AB --> AC[Docs-only follow-up PR for knowledge/decision logs]
 ```
 
 ## 2. Pipeline Details
@@ -57,7 +62,11 @@ flowchart TD
 5. `Unified Release` (`.github/workflows/unified-release.yml`)
    - Triggered only by tag push matching `vX.Y.Z`.
    - Requires tag commit to be reachable from `main`.
-   - Builds frontend and backend, checks version parity, publishes GitHub Release.
+   - Builds frontend and backend, checks version parity.
+   - Produces two release assets:
+     - `runtime-vX.Y.Z.zip`
+     - `source-vX.Y.Z.zip`
+   - Creates/updates draft release, runs blocking Linux+Windows acceptance by downloading runtime ZIP, then publishes final release only if both acceptance jobs pass.
 
 6. `Auto Logs` workflows
    - `auto-logs-on-pr-merge.yml`: after PR merged to `main`, creates docs follow-up PR.

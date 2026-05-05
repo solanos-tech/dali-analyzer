@@ -47,7 +47,10 @@ Frontend URL: `http://127.0.0.1:5173`
 ## Release Tags
 
 - Release trigger tag: `vX.Y.Z` (must point to commit on `main`)
-- Single release contains frontend and backend artifacts
+- Release assets:
+  - `runtime-vX.Y.Z.zip` (minimal runnable package with launchers)
+  - `source-vX.Y.Z.zip` (full source archive)
+- Release is published only after Linux + Windows runtime acceptance checks pass.
 
 ## Automatic Logs
 
