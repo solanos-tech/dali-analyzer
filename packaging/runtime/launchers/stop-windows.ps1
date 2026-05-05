@@ -13,11 +13,26 @@ if (-not (Test-Path $pidFile)) {
 
 $pidText = (Get-Content -Path $pidFile -Raw).Trim()
 if ($pidText) {
-    try {
-        & taskkill /PID $pidText /T /F | Out-Null
-        Write-Output "Stopped process tree pid=$pidText"
-    } catch {
-        Write-Output "Could not stop pid=${pidText}: $($_.Exception.Message)"
+    $targetPid = [int]$pidText
+    $proc = Get-Process -Id $targetPid -ErrorAction SilentlyContinue
+    if ($proc) {
+        try {
+            $proc | Stop-Process -Force -ErrorAction Stop
+            Write-Output "Stopped process pid=$targetPid"
+        } catch {
+            Write-Output "Could not stop pid=$targetPid via Stop-Process: $($_.Exception.Message)"
+            try {
+                $taskkillOutput = & taskkill /PID $targetPid /T /F 2>&1
+                Write-Output "Stopped process tree pid=$targetPid"
+                if ($taskkillOutput) {
+                    Write-Output ($taskkillOutput | Out-String).Trim()
+                }
+            } catch {
+                Write-Output "Could not stop pid=$targetPid via taskkill: $($_.Exception.Message)"
+            }
+        }
+    } else {
+        Write-Output "Process pid=$targetPid already stopped."
     }
 }
 
