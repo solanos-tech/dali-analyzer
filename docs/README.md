@@ -6,6 +6,7 @@ This repository uses an agent-oriented documentation layout.
 
 - [adr/](adr/) - architecture and decision records
 - [agent/](agent/) - operating guidance for AI and human contributors
+- [ci-cd.md](ci-cd.md) - end-to-end CI/CD pipeline and policy map
 - [test/](test/) - testing strategy, commands, and quality gates
 - [tasks/](tasks/) - task registry, roadmap, and delivery tracking
 - [modules/](modules/) - module-level reference docs

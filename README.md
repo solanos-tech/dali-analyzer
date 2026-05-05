@@ -48,4 +48,5 @@ After merged PRs and successful release workflows, automation creates follow-up 
 
 - [agents.md](agents.md) - agent runtime entrypoint and mandatory branch/PR workflow
 - [docs/README.md](docs/README.md) - documentation map and structure
+- [docs/ci-cd.md](docs/ci-cd.md) - CI/CD pipelines and policy gates overview
 - [CHANGELOG.md](CHANGELOG.md) - change history
