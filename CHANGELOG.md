@@ -6,6 +6,27 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-05-05
+
+### Added
+
+- Unified release now publishes two ZIP artifacts:
+  - `runtime-vX.Y.Z.zip`
+  - `source-vX.Y.Z.zip`
+- Added runtime package template content for release assembly:
+  - `packaging/runtime/README.md`
+  - `packaging/runtime/config/runtime-config.json`
+  - `packaging/runtime/launchers/*`
+- Added release packaging scripts:
+  - `scripts/release/build-runtime-package.sh`
+  - `scripts/release/build-source-package.sh`
+
+### Changed
+
+- Updated `Unified Release` workflow to draft-first publishing with blocking Linux/Windows acceptance checks based on downloaded runtime asset.
+- Backend now supports serving frontend static runtime bundle with SPA fallback and runtime config endpoint.
+- Frontend now supports runtime API base URL override via `config/runtime-config.json` for split-host deployments.
+
 ## [0.9.0] - 2026-05-05
 
 ### Changed
