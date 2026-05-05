@@ -6,6 +6,15 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-05-05
+
+### Changed
+
+- Bumped aligned backend/frontend release version to `0.9.0`.
+- Improved Windows local runtime scripts:
+  - `scripts/ops/dev-up.ps1`
+  - `scripts/ops/dev-down.ps1`
+
 ### Added
 
 - Added human-readable CI/CD and policy documentation with Mermaid diagrams:
