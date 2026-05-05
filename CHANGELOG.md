@@ -6,6 +6,14 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.9.2] - 2026-05-05
+
+### Fixed
+
+- Fixed Windows runtime stop launcher to be idempotent during acceptance shutdown:
+  - `packaging/runtime/launchers/stop-windows.ps1`
+- Acceptance stop step no longer fails when tracked backend PID is already gone.
+
 ## [0.9.1] - 2026-05-05
 
 ### Added
