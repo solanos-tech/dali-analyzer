@@ -13,7 +13,7 @@ Active work items for ongoing iterations.
 
 | ID | Title | Priority | Status | Owner | Next Action | Last Updated |
 |---|---|---|---|---|---|---|
-| BKL-001 | Auto-PR and CI supervision standard | P1 | in-progress | team | Finalize doc updates and PR template | 2026-05-06 |
+| BKL-001 | Auto-PR and CI supervision standard | P1 | done-pending-log | team | Merge PR and close item in next iteration note | 2026-05-06 |
 
 ## Maintenance Rule
 
