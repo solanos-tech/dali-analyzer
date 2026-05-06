@@ -48,3 +48,11 @@ Operational decision register updated after merged pull requests and successful 
 - Related links:
   - `docs/tasks/reports/repo-hygiene-closeout-2026-04-28.md`
   - `docs/tasks/reports/dali-doc-english-migration-plan.md`
+
+- Date (UTC): 2026-05-06T11:12:49Z
+- Event key: pr-20-7562343cd0e94e1b24a72049508dc1013c10bd96
+- Trigger: merged pull request
+- Decision: retain branch+PR workflow and create post-merge knowledge artifacts
+- Rationale: merged increments should leave audit-ready operational traces
+- Impact: improves repository memory and onboarding continuity
+- Related links: PR #20 (docs: reorganize docs IA and add soft governance backlog loop) by @prudek - https://github.com/prudek/dali-analyzer/pull/20
