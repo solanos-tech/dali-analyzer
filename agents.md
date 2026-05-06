@@ -9,6 +9,7 @@ This is the single runtime entrypoint for agent and multi-agent work in this rep
 - `docs/adr/ADR-0003-branch-pr-mandatory.md`
 - `docs/adr/ADR-0004-release-versioning-policy.md`
 - `docs/adr/ADR-0005-agent-learning-loop.md`
+- `docs/adr/ADR-0006-documentation-impact-and-backlog-review.md`
 - `docs/adr/ADR-0007-auto-pr-and-ci-supervision-standard.md`
 
 ## Branch and PR Rule (Mandatory)
@@ -21,6 +22,18 @@ For every new functionality or material change:
 4. Commit, push, and open a PR automatically.
 
 Direct-to-main changes are not allowed.
+
+## Documentation and Backlog Rule (Mandatory)
+
+For every material pull request:
+
+1. Complete a `Documentation Impact` note in PR description.
+2. Update all impacted docs following `docs/agent/documentation-governance.md`.
+3. Update active tasks in `docs/tasks/backlog.md`.
+4. Move completed tasks to `docs/tasks/done-log.md` when ready.
+5. Add one short iteration note in `docs/tasks/iterations/`.
+
+No hard CI gate enforces this; agents and reviewers must enforce it through workflow discipline.
 
 ## Definition of Done for Material Changes
 
@@ -99,13 +112,13 @@ make dev-down
 
 ## Active Work Sources
 
-- Active backlog: `docs/tasks/backlog.md`
-- Completed items log: `docs/tasks/done-log.md`
-- Iteration notes: `docs/tasks/iterations/`
-- Project status: `docs/tasks/projects.md`
-- Roadmap: `docs/tasks/roadmap.md`
-- Task template: `docs/tasks/task-template.md`
-- Handoff template: `docs/tasks/handoff-template.md`
+- Backlog (active): `docs/tasks/backlog.md`
+- Done log (history): `docs/tasks/done-log.md`
+- Project register: `docs/tasks/planning/projects.md`
+- Roadmap: `docs/tasks/planning/roadmap.md`
+- Task template: `docs/tasks/templates/task-template.md`
+- Handoff template: `docs/tasks/templates/handoff-template.md`
+- Iteration template: `docs/tasks/templates/iteration-review-template.md`
 
 ## Where Agents Should Read Next
 
@@ -115,9 +128,11 @@ make dev-down
 - `docs/agent/interrupt-flow.md`
 - `docs/agent/ci-triage-playbook.md`
 - `docs/agent/feature-flags.md`
+- `docs/agent/documentation-governance.md`
 - `docs/agent/release-versioning.md`
 - `Makefile`
 - `docs/agent/knowledge-log.md`
 - `docs/agent/decision-log.md`
+- `docs/cicd/README.md`
 - `docs/test/README.md`
 - `docs/test/checklist.md`

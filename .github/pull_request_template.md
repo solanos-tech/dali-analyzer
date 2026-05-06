@@ -9,8 +9,8 @@ Briefly describe the change and objective.
 
 ## Documentation Impact (Required)
 
-- Impacted docs:
-- Why updated:
+- Impacted documentation areas:
+- Why these docs were updated:
 - If no docs changed, provide rationale:
 
 ## CI Triage (Required for Material Changes)
@@ -26,8 +26,8 @@ Briefly describe the change and objective.
 ## Backlog Update (Required for Material Changes)
 
 - [ ] Updated `docs/tasks/backlog.md`
-- [ ] Updated `docs/tasks/done-log.md` (if any item moved to done)
-- [ ] Added iteration note in `docs/tasks/iterations/`
+- [ ] Updated `docs/tasks/done-log.md` (if any item reached done)
+- [ ] Added/updated iteration note in `docs/tasks/iterations/`
 
 ## Validation
 
@@ -42,8 +42,9 @@ Describe manual test scenarios and results.
 
 ## Docs and registers
 
-- [ ] Documentation in `docs/` updated (if applicable)
-- [ ] Updated `docs/tasks/projects.md` (project status, if applicable)
+- [ ] Documentation in `docs/` updated for impacted areas
+- [ ] Mapping validated against `docs/agent/documentation-governance.md`
+- [ ] Updated root `README.md` when high-level behavior/onboarding changed
 - [ ] Added/updated relevant ADR in `docs/adr/` (if applicable)
 - [ ] Updated `CHANGELOG.md`
 

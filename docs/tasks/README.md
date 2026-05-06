@@ -1,23 +1,34 @@
 # Tasks
 
-Task planning, execution tracking, and iteration closeout.
+Task planning, backlog maintenance, and iteration tracking.
 
-- [projects.md](projects.md)
-- [roadmap.md](roadmap.md)
-- [task-template.md](task-template.md)
-- [handoff-template.md](handoff-template.md)
-- [backlog.md](backlog.md)
-- [done-log.md](done-log.md)
+## Working Sets
+
+- [backlog.md](backlog.md) - single source of truth for active work
+- [done-log.md](done-log.md) - chronological completion history
+- [planning/projects.md](planning/projects.md) - high-level project register
+- [planning/roadmap.md](planning/roadmap.md) - milestone roadmap
+
+## Templates
+
+- [templates/task-template.md](templates/task-template.md)
+- [templates/handoff-template.md](templates/handoff-template.md)
+- [templates/iteration-review-template.md](templates/iteration-review-template.md)
 - [iteration-note-template.md](iteration-note-template.md)
-- [iterations/](iterations/)
 
-## Iteration Closeout Standard
+## Iteration Notes
 
-After each material PR:
+- [iterations/](iterations/) - one short note per PR/iteration (`YYYY-MM-DD-<slug>.md`)
 
-1. Update `backlog.md` statuses.
-2. Move completed items to `done-log.md` when applicable.
-3. Add one note in `iterations/` using `iteration-note-template.md`.
+## Reports
+
+- [reports/](reports/) - historical audits and closeout reports
+
+## Standard Loop (per PR)
+
+1. Update `backlog.md` status for touched tasks.
+2. Move completed items to `done-log.md`.
+3. Add a short next-iteration note in `iterations/`.
 4. Record next 3 priorities and active risks.
 
 ## Post-PR Review Checklist

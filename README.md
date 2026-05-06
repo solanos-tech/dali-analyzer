@@ -1,67 +1,109 @@
 # dali-analyzer
 
-This repository is prepared for iterative human + AI collaboration.
+## Product Overview
 
-## Start Here
+`dali-analyzer` is a diagnostics tool for DALI/DALI-2 traffic inspection.
+It ingests raw frame streams, classifies and decodes them in the backend, and exposes
+REST/SSE data for a browser UI.
 
-1. Select environment context.
-2. Run local dev stack or deploy path.
-3. Use release commands when publishing from `main`.
+Primary use cases:
 
-## Operational Commands
+- inspect simulated sniffer logs without hardware
+- inspect live serial input from a connected sniffer
+- review decoded transactions and protocol semantics for troubleshooting
 
-- Select active environment context (`dev` or `prod`): `make env-use ENV=dev|prod`
-- Show active environment context (defaults to `dev` when not set): `make env-show`
-- Trigger deploy contract for `dev` context (no local deployment is executed): `make deploy`
-- Validate release preconditions (clean `main`, versions, changelog, tag availability): `make release-prepare VERSION=X.Y.Z`
-- Publish release tag `vX.Y.Z` (runs preflight first and pushes tag): `make release-publish VERSION=X.Y.Z`
-- Check release workflow and GitHub release status for `vX.Y.Z`: `make release-status VERSION=X.Y.Z`
+DALI context:
 
-Detailed behavior and step-by-step flows for humans: `docs/ci-cd.md` (section "6. Human Command Reference").
+- System is aligned with IEC 62386 concepts (DALI and DALI-2 families).
+- Working protocol reference in this repository: [docs/standards/dali.md](docs/standards/dali.md).
 
-## Local Dev Stack
+Input stream shape:
 
-- Start backend then frontend (parallel runtime): `make dev-up`
+- Simulated logs: `docs/standards/sniffer_log_example.log`
+- Live serial: parsed with this backend pattern:
+
+```text
+ts_ms=(?P<ts>\d+)\s+dir=(?P<dir>[a-zA-Z0-9_]+)\s+raw=(?P<raw>0x[0-9A-Fa-f]+)
+```
+
+Example line:
+
+```text
+[2026-05-05 10:00:00.180] sniffer ts_ms=80 dir=rx_forward24 raw=0x01FE30
+```
+
+## Developer/Repository Guide
+
+### Quick Start
+
+- Start local stack: `make dev-up`
+- Smoke-check stack: `make dev-check`
 - Stop local stack: `make dev-down`
-- Smoke local stack: `make dev-check`
 
-One-script launcher equivalents:
+Launcher equivalents:
 
-- Linux/macOS start: `./scripts/ops/dev-up.sh`
-- Linux/macOS stop: `./scripts/ops/dev-down.sh`
-- Windows start (PowerShell): `.\scripts\ops\dev-up.ps1`
-- Windows stop (PowerShell): `.\scripts\ops\dev-down.ps1`
+- Linux/macOS: `./scripts/ops/dev-up.sh`, `./scripts/ops/dev-down.sh`
+- Windows PowerShell: `.\scripts\ops\dev-up.ps1`, `.\scripts\ops\dev-down.ps1`
 
-Launchers run backend/frontend as background processes and then return terminal control.  
-If startup fails, launcher now exits with explicit error and prints relevant log tail.
+Default local URLs:
 
-Backend URL: `http://127.0.0.1:8000`
-Frontend URL: `http://127.0.0.1:5173`
+- Backend: `http://127.0.0.1:8000`
+- Frontend: `http://127.0.0.1:5173`
 
-## Runtime Config
+### Operational Commands
 
-- Frontend API base URL (optional): `VITE_API_BASE_URL`
+- Set environment context: `make env-use ENV=dev|prod`
+- Show current context: `make env-show`
+- Dev deploy contract: `make deploy`
+- Release preflight: `make release-prepare VERSION=X.Y.Z`
+- Publish release tag: `make release-publish VERSION=X.Y.Z`
+- Check release status: `make release-status VERSION=X.Y.Z`
+
+Detailed CI/CD and command flow: [docs/cicd/README.md](docs/cicd/README.md).
+
+### Workflow (Minimal)
+
+`branch -> implement -> validate -> PR -> review -> merge`
+
+- Branch + PR workflow is mandatory for material changes.
+- Release tags must follow `vX.Y.Z`.
+
+### Repository Map
+
+```text
+.
+|-- backend/
+|-- frontend/
+|-- docs/
+|   |-- adr/
+|   |-- agent/
+|   |-- cicd/
+|   |-- modules/
+|   |-- standards/
+|   |-- tasks/
+|   `-- test/
+|-- packaging/
+|-- scripts/
+|-- agents.md
+`-- CHANGELOG.md
+```
+
+### Runtime Config
+
+- Frontend API base URL: `VITE_API_BASE_URL` (optional)
 - Frontend dev proxy target: `VITE_API_PROXY_TARGET` (default `http://127.0.0.1:8000`)
 - Backend CORS allow list: `CORS_ALLOW_ORIGINS` (comma-separated)
 
-## Release Tags
+### Versioning and Release
 
-- Release trigger tag: `vX.Y.Z` (must point to commit on `main`)
+- Unified release tag: `vX.Y.Z` (must point to commit reachable from `main`)
 - Release assets:
-  - `runtime-vX.Y.Z.zip` (minimal runnable package with launchers)
-  - `source-vX.Y.Z.zip` (full source archive)
-- Release is published only after Linux + Windows runtime acceptance checks pass.
+  - `runtime-vX.Y.Z.zip`
+  - `source-vX.Y.Z.zip`
 
-## Automatic Logs
+### Documentation Index
 
-After merged PRs and successful release workflows, automation creates follow-up docs PRs that update:
-
-- `docs/agent/knowledge-log.md`
-- `docs/agent/decision-log.md`
-
-## Documentation
-
-- [agents.md](agents.md) - agent runtime entrypoint and mandatory branch/PR workflow
-- [docs/README.md](docs/README.md) - documentation map and structure
-- [docs/ci-cd.md](docs/ci-cd.md) - CI/CD pipelines and policy gates overview
+- [agents.md](agents.md) - agent runtime entrypoint and mandatory workflow
+- [docs/README.md](docs/README.md) - documentation map
+- [docs/cicd/README.md](docs/cicd/README.md) - CI/CD overview and policy gates
 - [CHANGELOG.md](CHANGELOG.md) - change history

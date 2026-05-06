@@ -12,11 +12,16 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
   - `docs/agent/ci-triage-playbook.md`
 - Added ADR standard for auto-PR and bounded CI failure handling:
   - `docs/adr/ADR-0007-auto-pr-and-ci-supervision-standard.md`
+- Added documentation governance map for PR-level documentation impact and backlog review:
+  - `docs/agent/documentation-governance.md`
 - Added backlog closeout artifacts for per-PR iteration discipline:
   - `docs/tasks/backlog.md`
   - `docs/tasks/done-log.md`
   - `docs/tasks/iteration-note-template.md`
+  - `docs/tasks/templates/iteration-review-template.md`
   - `docs/tasks/iterations/README.md`
+- Added ADR for soft documentation and backlog enforcement model:
+  - `docs/adr/ADR-0006-documentation-impact-and-backlog-review.md`
 
 ### Changed
 
@@ -31,6 +36,14 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
   - `Backlog Update`
 - Updated task and handoff templates with CI supervision metadata fields.
 - Expanded PR-trigger path filters for required CI workflows (`backend-ci`, `frontend-ci`, `integration-smoke`) so docs/governance-only PRs also produce required check statuses.
+- Reorganized CI/CD documentation path from `docs/ci-cd.md` to `docs/cicd/README.md`.
+- Reorganized `docs/tasks` into logical subfolders:
+  - `docs/tasks/planning/`
+  - `docs/tasks/templates/`
+  - `docs/tasks/reports/`
+- Rebuilt root `README.md` into product-level and developer-level sections.
+- Expanded module and test documentation depth for operational use.
+- Updated agent workflow docs and PR template to require `Documentation Impact` and `Backlog Update` in every material PR.
 
 ## [0.9.3] - 2026-05-05
 
@@ -80,7 +93,7 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 ### Added
 
 - Added human-readable CI/CD and policy documentation with Mermaid diagrams:
-  - `docs/ci-cd.md`
+  - `docs/cicd/README.md`
 - Added Windows one-script local launcher support:
   - `scripts/ops/dev-up.ps1`
   - `scripts/ops/dev-down.ps1`
@@ -114,8 +127,8 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 - Added frontend status-panel actions to clear in-memory frames and export current log buffer as `.log`.
 - Added DALI-2 semantic upgrades for forward24 decoding: `forward24_input_notification`, helper-range classification, and instance query routing.
 - Added runtime instance-context endpoint `GET /api/v2/context/instances`.
-- Added repository closeout audit report: `docs/tasks/repo-hygiene-closeout-2026-04-28.md`.
-- Added future English migration/structure plan for DALI standard doc: `docs/tasks/dali-doc-english-migration-plan.md`.
+- Added repository closeout audit report: `docs/tasks/reports/repo-hygiene-closeout-2026-04-28.md`.
+- Added future English migration/structure plan for DALI standard doc: `docs/tasks/reports/dali-doc-english-migration-plan.md`.
 - Added traceability backup copy for DALI standards source text: `docs/standards/dali.pl.md`.
 
 ### Changed
@@ -133,7 +146,7 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 - Added explicit response model and CORS support in backend API.
 - Updated backend CI smoke checks to validate frames endpoint.
 - Updated backend release tags from `v*` to `backend-v*`.
-- Updated agent operating docs (`AGENTS.md`, `docs/agent/interrupt-flow.md`, `docs/tasks/task-template.md`) to enforce branch + PR flow.
+- Updated agent operating docs (`AGENTS.md`, `docs/agent/interrupt-flow.md`, `docs/tasks/templates/task-template.md`) to enforce branch + PR flow.
 - Updated agent docs to enforce synchronized backend/frontend version bumps and strict release tag patterns.
 - Updated agent docs and templates to require post-merge and post-release knowledge/decision logging.
 - Updated root/backend/frontend README files with clearer run instructions and automatic logging behavior.

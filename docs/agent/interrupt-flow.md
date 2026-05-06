@@ -10,10 +10,19 @@ For all new functionality and material changes:
 2. Create a dedicated branch.
 3. Implement and validate in that branch.
 4. Push branch and open PR automatically.
-5. Fill PR template with concrete data from the implemented change and validations.
-6. Monitor required CI checks to terminal status or timeout.
+5. Complete `Documentation Impact` and `Backlog Review` updates before handoff.
+6. Fill PR template with concrete data from implemented change and validations.
+7. Monitor required CI checks to terminal status or timeout.
 
 No direct work on `main` is allowed.
+
+## Documentation and Backlog Review Protocol (Per PR)
+
+1. Map code/process changes to docs updates using `docs/agent/documentation-governance.md`.
+2. Update impacted docs in the same PR.
+3. Update `docs/tasks/backlog.md`.
+4. Move completed items to `docs/tasks/done-log.md` if applicable.
+5. Add one short iteration note in `docs/tasks/iterations/`.
 
 ## CI Supervision Protocol
 
@@ -57,4 +66,4 @@ Direct log updates to `main` are not allowed.
 4. Assign next owner explicitly.
 5. Include CI supervision state (`run_id`, failing job, retry decision, proposed fix).
 
-Template: `docs/tasks/handoff-template.md`.
+Template: `docs/tasks/templates/handoff-template.md`.

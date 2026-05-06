@@ -1,11 +1,10 @@
 # Done Log
 
-Chronological log of completed backlog items.
+Chronological history of completed backlog items.
 
-| Date | Item ID | Outcome | PR |
+| Date | Backlog ID | Outcome | PR |
 |---|---|---|---|
-| 2026-05-06 | BKL-001 | Auto-PR and CI supervision standard drafted and integrated in workflow docs | pending |
-
-## Maintenance Rule
-
-Move completed items from `backlog.md` when they reach done.
+| 2026-05-06 | BKL-001 | Docs IA reorganized (cicd relocation + tasks substructure) | pending |
+| 2026-05-06 | BKL-002 | Agent documentation governance introduced | pending |
+| 2026-05-06 | BKL-003 | Test and module docs expanded with architecture flow | pending |
+| 2026-05-06 | BKL-005 | Auto-PR and CI supervision standard integrated in workflow docs | pending |

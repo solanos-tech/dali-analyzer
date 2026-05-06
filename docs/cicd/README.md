@@ -174,3 +174,12 @@ For material PRs, agent workflow includes CI supervision:
 5. If tooling/auth/network is unavailable, report explicit blocker and provide manual fallback steps.
 
 Detailed procedure: `docs/agent/ci-triage-playbook.md`.
+
+## 8. Documentation and Backlog Compliance Model
+
+- This repository does not use a dedicated hard CI gate for docs/backlog updates.
+- Compliance is enforced through:
+  - `agents.md` mandatory workflow rules
+  - `docs/agent/documentation-governance.md` mapping
+  - `.github/pull_request_template.md` required sections
+  - reviewer discipline during PR evaluation
