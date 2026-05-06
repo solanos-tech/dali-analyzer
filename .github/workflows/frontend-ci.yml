@@ -4,6 +4,11 @@ on:
   pull_request:
     paths:
       - "frontend/**"
+      - "docs/**"
+      - "README.md"
+      - "agents.md"
+      - "CHANGELOG.md"
+      - ".github/pull_request_template.md"
       - ".github/workflows/frontend-ci.yml"
   push:
     branches: [ main ]

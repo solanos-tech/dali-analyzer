@@ -5,6 +5,11 @@ on:
     paths:
       - "backend/**"
       - "frontend/**"
+      - "docs/**"
+      - "README.md"
+      - "agents.md"
+      - "CHANGELOG.md"
+      - ".github/pull_request_template.md"
       - ".github/workflows/integration-smoke.yml"
   push:
     branches: [ main ]

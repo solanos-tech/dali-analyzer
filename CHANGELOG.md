@@ -30,6 +30,7 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
   - `CI Triage`
   - `Backlog Update`
 - Updated task and handoff templates with CI supervision metadata fields.
+- Expanded PR-trigger path filters for required CI workflows (`backend-ci`, `frontend-ci`, `integration-smoke`) so docs/governance-only PRs also produce required check statuses.
 
 ## [0.9.3] - 2026-05-05
 
