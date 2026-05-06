@@ -1,8 +1,30 @@
 # Tasks
 
-Task planning and execution tracking.
+Task planning, backlog maintenance, and iteration tracking.
 
-- [projects.md](projects.md)
-- [roadmap.md](roadmap.md)
-- [task-template.md](task-template.md)
-- [handoff-template.md](handoff-template.md)
+## Working Sets
+
+- [backlog.md](backlog.md) - single source of truth for active work
+- [done-log.md](done-log.md) - chronological completion history
+- [planning/projects.md](planning/projects.md) - high-level project register
+- [planning/roadmap.md](planning/roadmap.md) - milestone roadmap
+
+## Templates
+
+- [templates/task-template.md](templates/task-template.md)
+- [templates/handoff-template.md](templates/handoff-template.md)
+- [templates/iteration-review-template.md](templates/iteration-review-template.md)
+
+## Iteration Notes
+
+- [iterations/](iterations/) - one short note per PR/iteration (`YYYY-MM-DD-<slug>.md`)
+
+## Reports
+
+- [reports/](reports/) - historical audits and closeout reports
+
+## Standard Loop (per PR)
+
+1. Update `backlog.md` status for touched tasks.
+2. Move completed items to `done-log.md`.
+3. Add a short next-iteration note in `iterations/`.

@@ -41,7 +41,11 @@ Describe the business or technical outcome in 1-2 sentences.
 - [ ] Branch created before implementation
 - [ ] Changes validated locally
 - [ ] PR opened and linked to task
-- [ ] Docs/changelog updated if required
+- [ ] Documentation Impact section completed in PR description
+- [ ] Docs/changelog updated where impacted
+- [ ] `docs/tasks/backlog.md` updated
+- [ ] `docs/tasks/done-log.md` updated (if any task reached done)
+- [ ] Iteration note added in `docs/tasks/iterations/`
 - [ ] `backend/pyproject.toml` version updated (if release-related)
 - [ ] `frontend/package.json` version updated (if release-related)
 - [ ] Tag plan uses valid release pattern (`vX.Y.Z`)

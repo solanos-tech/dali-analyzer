@@ -8,6 +8,10 @@
 - `packaging/runtime/` - Runtime package templates (launchers, config, README)
 - `scripts/release/` - Runtime/source archive build scripts for release workflow
 - `docs/` - agent-first project documentation
+  - `docs/cicd/README.md` - CI/CD flow and release policy map
+  - `docs/tasks/backlog.md` - active backlog
+  - `docs/tasks/done-log.md` - completion history
+  - `docs/tasks/iterations/` - per-iteration notes
 
 ## Backend
 
