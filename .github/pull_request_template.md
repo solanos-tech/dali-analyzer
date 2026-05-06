@@ -13,7 +13,17 @@ Briefly describe the change and objective.
 - Why these docs were updated:
 - If no docs changed, provide rationale:
 
-## Backlog Update (Required)
+## CI Triage (Required for Material Changes)
+
+- Required checks status:
+- Workflow run IDs reviewed:
+- Failed job IDs (if any):
+- Classification: `flaky_suspected` | `deterministic_failure` | `infra_or_permissions`
+- Retry used (one max): yes/no
+- Root-cause summary:
+- Hotfix proposed on current branch: yes/no
+
+## Backlog Update (Required for Material Changes)
 
 - [ ] Updated `docs/tasks/backlog.md`
 - [ ] Updated `docs/tasks/done-log.md` (if any item reached done)

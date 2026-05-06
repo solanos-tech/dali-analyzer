@@ -10,6 +10,7 @@ This is the single runtime entrypoint for agent and multi-agent work in this rep
 - `docs/adr/ADR-0004-release-versioning-policy.md`
 - `docs/adr/ADR-0005-agent-learning-loop.md`
 - `docs/adr/ADR-0006-documentation-impact-and-backlog-review.md`
+- `docs/adr/ADR-0007-auto-pr-and-ci-supervision-standard.md`
 
 ## Branch and PR Rule (Mandatory)
 
@@ -18,7 +19,7 @@ For every new functionality or material change:
 1. Ask the user whether to create a branch and PR.
 2. After confirmation, always create a branch.
 3. Implement only on that branch.
-4. Commit, push, and open a PR.
+4. Commit, push, and open a PR automatically.
 
 Direct-to-main changes are not allowed.
 
@@ -33,6 +34,17 @@ For every material pull request:
 5. Add one short iteration note in `docs/tasks/iterations/`.
 
 No hard CI gate enforces this; agents and reviewers must enforce it through workflow discipline.
+
+## Definition of Done for Material Changes
+
+For every material change, done means all of the following are complete:
+
+1. Branch is pushed.
+2. Pull request is created and linked.
+3. PR template is filled with meaningful technical detail.
+4. Required CI checks are monitored to terminal state or explicit timeout.
+
+If required tooling/auth is unavailable, report blocker explicitly and provide manual fallback steps.
 
 ## Versioning, Tagging, and Release Rule (Mandatory)
 
@@ -88,6 +100,8 @@ make dev-down
 - Keep edits scoped to the active task; avoid unrelated refactors.
 - Update `CHANGELOG.md` for material changes.
 - After each merged PR and successful release workflow, update knowledge and decision logs through an auto-generated docs PR.
+- Avoid infinite fix loops: at most one CI retry for likely flaky failures, then root-cause analysis.
+- Do not apply autonomous multi-iteration hotfix chains without user confirmation.
 
 ## Multi-Agent Working Contract
 
@@ -112,6 +126,7 @@ make dev-down
 - `docs/agent/edit-boundaries.md`
 - `docs/agent/build-runbook.md`
 - `docs/agent/interrupt-flow.md`
+- `docs/agent/ci-triage-playbook.md`
 - `docs/agent/feature-flags.md`
 - `docs/agent/documentation-governance.md`
 - `docs/agent/release-versioning.md`

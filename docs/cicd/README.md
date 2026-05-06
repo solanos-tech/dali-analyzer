@@ -41,17 +41,20 @@ flowchart TD
 ## 2. Pipeline Details
 
 1. `Backend CI` (`.github/workflows/backend-ci.yml`)
-   - On PR and push to `main` for `backend/**`.
+   - On PR for `backend/**` and documentation/governance paths (`docs/**`, root onboarding docs, PR template).
+   - On push to `main` for `backend/**`.
    - Runs `ruff`, `pytest`, `mypy`.
    - On `main` push, also builds package and runs install+smoke checks from built wheel.
 
 2. `Frontend CI` (`.github/workflows/frontend-ci.yml`)
-   - On PR and push to `main` for `frontend/**`.
+   - On PR for `frontend/**` and documentation/governance paths (`docs/**`, root onboarding docs, PR template).
+   - On push to `main` for `frontend/**`.
    - Runs `npm ci`, `npm run lint`, `npm run build`.
    - On `main` push, uploads frontend build artifact.
 
 3. `Integration Smoke` (`.github/workflows/integration-smoke.yml`)
-   - On PR and push to `main` when backend or frontend changes.
+   - On PR when backend/frontend or documentation/governance paths change.
+   - On push to `main` when backend or frontend changes.
    - Builds frontend, starts backend, checks `/health` and `/api/frames?source=mock`.
 
 4. `Deploy Dev` (`.github/workflows/deploy-dev.yml`)
@@ -160,7 +163,19 @@ If active context is `prod`, `make deploy` fails by design with:
 
 `deploy is disabled for 'prod'. Use release-prepare and release-publish.`
 
-## 7. Documentation and Backlog Compliance Model
+## 7. Agent CI Supervision Standard
+
+For material PRs, agent workflow includes CI supervision:
+
+1. Monitor required checks for PR head SHA.
+2. On failure, collect failing job logs and classify cause.
+3. Retry failed jobs once only when flaky is suspected.
+4. For deterministic failures, provide root-cause summary and hotfix proposal on same branch.
+5. If tooling/auth/network is unavailable, report explicit blocker and provide manual fallback steps.
+
+Detailed procedure: `docs/agent/ci-triage-playbook.md`.
+
+## 8. Documentation and Backlog Compliance Model
 
 - This repository does not use a dedicated hard CI gate for docs/backlog updates.
 - Compliance is enforced through:

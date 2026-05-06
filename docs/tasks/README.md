@@ -14,6 +14,7 @@ Task planning, backlog maintenance, and iteration tracking.
 - [templates/task-template.md](templates/task-template.md)
 - [templates/handoff-template.md](templates/handoff-template.md)
 - [templates/iteration-review-template.md](templates/iteration-review-template.md)
+- [iteration-note-template.md](iteration-note-template.md)
 
 ## Iteration Notes
 
@@ -28,3 +29,11 @@ Task planning, backlog maintenance, and iteration tracking.
 1. Update `backlog.md` status for touched tasks.
 2. Move completed items to `done-log.md`.
 3. Add a short next-iteration note in `iterations/`.
+4. Record next 3 priorities and active risks.
+
+## Post-PR Review Checklist
+
+- [ ] Done items captured
+- [ ] Blockers captured
+- [ ] Next 3 tasks captured
+- [ ] Risks captured

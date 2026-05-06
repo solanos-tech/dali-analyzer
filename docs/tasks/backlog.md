@@ -17,6 +17,7 @@ Single source of truth for active iteration work.
 | BKL-002 | Introduce documentation governance for agent workflow | P1 | done-ready | team | 2026-05-06 | Merge PR and move to done-log | 2026-05-06 |
 | BKL-003 | Expand test/module documentation depth | P1 | done-ready | team | 2026-05-06 | Merge PR and move to done-log | 2026-05-06 |
 | BKL-004 | Validate links after docs path migration | P2 | in-progress | team | 2026-05-06 | Run path validation sweep | 2026-05-06 |
+| BKL-005 | Standardize agent auto-PR and CI supervision loop | P1 | done-ready | team | 2026-05-06 | Merge PR #21 and move to done-log | 2026-05-06 |
 
 ## Refinement Notes
 

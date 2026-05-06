@@ -32,6 +32,8 @@
   - `.github/workflows/backend-ci.yml`
   - `.github/workflows/frontend-ci.yml`
   - `.github/workflows/integration-smoke.yml`
+- CI triage guidance:
+  - `docs/agent/ci-triage-playbook.md` (read first after PR creation)
 - Deployment workflow:
   - `.github/workflows/deploy-dev.yml`
 - Release workflow:

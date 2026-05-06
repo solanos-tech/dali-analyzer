@@ -8,18 +8,34 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 
 ### Added
 
+- Added CI triage operational playbook for agent-driven PR supervision:
+  - `docs/agent/ci-triage-playbook.md`
+- Added ADR standard for auto-PR and bounded CI failure handling:
+  - `docs/adr/ADR-0007-auto-pr-and-ci-supervision-standard.md`
 - Added documentation governance map for PR-level documentation impact and backlog review:
   - `docs/agent/documentation-governance.md`
-- Added task-operations artifacts for iterative backlog maintenance:
+- Added backlog closeout artifacts for per-PR iteration discipline:
   - `docs/tasks/backlog.md`
   - `docs/tasks/done-log.md`
+  - `docs/tasks/iteration-note-template.md`
   - `docs/tasks/templates/iteration-review-template.md`
-  - `docs/tasks/iterations/2026-05-06-docs-reorg-soft-governance.md`
+  - `docs/tasks/iterations/README.md`
 - Added ADR for soft documentation and backlog enforcement model:
   - `docs/adr/ADR-0006-documentation-impact-and-backlog-review.md`
 
 ### Changed
 
+- Updated agent runtime guide and handoff flow to include:
+  - automatic PR creation for material changes
+  - mandatory PR template completion
+  - CI supervision to terminal state or timeout
+  - bounded retry/hotfix safety rules
+- Expanded PR template with mandatory sections:
+  - `Documentation Impact`
+  - `CI Triage`
+  - `Backlog Update`
+- Updated task and handoff templates with CI supervision metadata fields.
+- Expanded PR-trigger path filters for required CI workflows (`backend-ci`, `frontend-ci`, `integration-smoke`) so docs/governance-only PRs also produce required check statuses.
 - Reorganized CI/CD documentation path from `docs/ci-cd.md` to `docs/cicd/README.md`.
 - Reorganized `docs/tasks` into logical subfolders:
   - `docs/tasks/planning/`

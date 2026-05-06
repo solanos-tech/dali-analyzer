@@ -9,8 +9,10 @@ For all new functionality and material changes:
 1. Confirm branch + PR flow with the user.
 2. Create a dedicated branch.
 3. Implement and validate in that branch.
-4. Complete `Documentation Impact` and `Backlog Review` updates before PR.
-5. Push and open PR before handoff.
+4. Push branch and open PR automatically.
+5. Complete `Documentation Impact` and `Backlog Review` updates before handoff.
+6. Fill PR template with concrete data from implemented change and validations.
+7. Monitor required CI checks to terminal status or timeout.
 
 No direct work on `main` is allowed.
 
@@ -21,6 +23,19 @@ No direct work on `main` is allowed.
 3. Update `docs/tasks/backlog.md`.
 4. Move completed items to `docs/tasks/done-log.md` if applicable.
 5. Add one short iteration note in `docs/tasks/iterations/`.
+
+## CI Supervision Protocol
+
+Use `docs/agent/ci-triage-playbook.md` for all CI failures.
+
+1. Fetch commit/PR check status and identify failing jobs.
+2. Collect failed job steps and logs.
+3. Classify failure as likely `flaky` or `deterministic`.
+4. If likely flaky: one retry of failed jobs only.
+5. If still failing or deterministic: prepare root-cause summary and hotfix proposal on the same branch.
+6. Before additional hotfix commit, present diagnosis and proposed correction to the user.
+
+Never run unbounded retry/fix loops.
 
 ## Learning and Decision Log Protocol
 
@@ -49,5 +64,6 @@ Direct log updates to `main` are not allowed.
 2. Link touched files and pending decisions.
 3. Record known risks.
 4. Assign next owner explicitly.
+5. Include CI supervision state (`run_id`, failing job, retry decision, proposed fix).
 
 Template: `docs/tasks/templates/handoff-template.md`.

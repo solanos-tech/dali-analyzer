@@ -51,6 +51,15 @@ make release-publish VERSION=X.Y.Z
 make release-status VERSION=X.Y.Z
 ```
 
+## PR and CI Supervision Flow
+
+For material changes:
+
+1. Push branch and open PR.
+2. Fill PR template sections, including CI triage metadata.
+3. Monitor required checks to terminal status or timeout.
+4. Use `docs/agent/ci-triage-playbook.md` for failure handling.
+
 ## Branch Hygiene Checklist
 
 ```powershell
