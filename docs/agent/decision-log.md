@@ -48,3 +48,11 @@ Operational decision register updated after merged pull requests and successful 
 - Related links:
   - `docs/tasks/reports/repo-hygiene-closeout-2026-04-28.md`
   - `docs/tasks/reports/dali-doc-english-migration-plan.md`
+
+- Date (UTC): 2026-05-06T12:02:48Z
+- Event key: release-25433962959-800b19a6491a9af59adcdd230963d5162006b1b1
+- Trigger: successful release workflow
+- Decision: preserve unified release tag policy and continue post-release logging
+- Rationale: successful release events should leave decision traces for future cycles
+- Impact: improves reproducibility and release diagnostics
+- Related links: workflow Unified Release (https://github.com/prudek/dali-analyzer/actions/runs/25433962959)
