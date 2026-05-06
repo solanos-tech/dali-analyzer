@@ -6,6 +6,11 @@
 It ingests raw frame streams, classifies and decodes them in the backend, and exposes
 REST/SSE data for a browser UI.
 
+
+<img width="1737" height="838" alt="image" src="https://github.com/user-attachments/assets/d221a36f-7e05-4a58-841f-fe7c55d058ef" />
+
+
+
 Primary use cases:
 
 - inspect simulated sniffer logs without hardware
