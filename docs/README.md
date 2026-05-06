@@ -15,6 +15,8 @@ This repository uses an agent-oriented documentation layout.
 
 - Keep all documentation in English.
 - Update `docs/tasks/projects.md` when project status changes.
+- Update `docs/tasks/backlog.md` and `docs/tasks/done-log.md` for each material PR.
+- Add iteration notes in `docs/tasks/iterations/`.
 - Add new decisions as ADR files in `docs/adr/`.
 - Update `CHANGELOG.md` for material process or product changes.
 - Keep operational traces in `docs/agent/knowledge-log.md` and `docs/agent/decision-log.md`.

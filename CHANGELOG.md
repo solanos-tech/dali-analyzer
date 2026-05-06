@@ -6,6 +6,31 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 
 ## [Unreleased]
 
+### Added
+
+- Added CI triage operational playbook for agent-driven PR supervision:
+  - `docs/agent/ci-triage-playbook.md`
+- Added ADR standard for auto-PR and bounded CI failure handling:
+  - `docs/adr/ADR-0007-auto-pr-and-ci-supervision-standard.md`
+- Added backlog closeout artifacts for per-PR iteration discipline:
+  - `docs/tasks/backlog.md`
+  - `docs/tasks/done-log.md`
+  - `docs/tasks/iteration-note-template.md`
+  - `docs/tasks/iterations/README.md`
+
+### Changed
+
+- Updated agent runtime guide and handoff flow to include:
+  - automatic PR creation for material changes
+  - mandatory PR template completion
+  - CI supervision to terminal state or timeout
+  - bounded retry/hotfix safety rules
+- Expanded PR template with mandatory sections:
+  - `Documentation Impact`
+  - `CI Triage`
+  - `Backlog Update`
+- Updated task and handoff templates with CI supervision metadata fields.
+
 ## [0.9.3] - 2026-05-05
 
 ### Fixed

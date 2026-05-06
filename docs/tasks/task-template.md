@@ -35,12 +35,19 @@ Describe the business or technical outcome in 1-2 sentences.
 
 - Automated tests:
 - Manual checks:
+- CI supervision plan:
+  - Expected workflows:
+  - Retry policy (`1` max for flaky):
+  - Escalation path for deterministic failures:
 
 ## PR Acceptance Checklist
 
 - [ ] Branch created before implementation
 - [ ] Changes validated locally
 - [ ] PR opened and linked to task
+- [ ] PR template includes `Documentation Impact`, `CI Triage`, and `Backlog Update`
+- [ ] CI checks monitored to terminal state or explicit timeout
+- [ ] CI triage captured (`run_id`, failed `job_id`, classification, decision)
 - [ ] Docs/changelog updated if required
 - [ ] `backend/pyproject.toml` version updated (if release-related)
 - [ ] `frontend/package.json` version updated (if release-related)

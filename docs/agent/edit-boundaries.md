@@ -7,6 +7,7 @@ This document defines safe boundaries for edits made by contributors and agents.
 - Keep changes scoped to the active task.
 - Avoid unrelated refactors in the same change set.
 - Do not change generated or lock files unless required by the task.
+- For material changes, include PR creation and CI supervision as part of completion.
 
 ## Backend Boundaries
 
@@ -22,3 +23,5 @@ This document defines safe boundaries for edits made by contributors and agents.
 
 - Keep workflows deterministic and reproducible.
 - Any workflow change should include local validation instructions.
+- Retry policy for CI failures: one retry only when failure is likely flaky.
+- When failure looks deterministic, switch immediately to diagnosis and hotfix proposal.

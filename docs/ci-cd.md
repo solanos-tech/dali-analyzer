@@ -159,3 +159,15 @@ These are the commands used by humans to control environment context and release
 If active context is `prod`, `make deploy` fails by design with:
 
 `deploy is disabled for 'prod'. Use release-prepare and release-publish.`
+
+## 7. Agent CI Supervision Standard
+
+For material PRs, agent workflow includes CI supervision:
+
+1. Monitor required checks for PR head SHA.
+2. On failure, collect failing job logs and classify cause.
+3. Retry failed jobs once only when flaky is suspected.
+4. For deterministic failures, provide root-cause summary and hotfix proposal on same branch.
+5. If tooling/auth/network is unavailable, report explicit blocker and provide manual fallback steps.
+
+Detailed procedure: `docs/agent/ci-triage-playbook.md`.
