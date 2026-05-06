@@ -38,7 +38,7 @@ Chronological lessons learned from merged pull requests and completed release cy
 - What failed or caused friction: Runtime environment initially lacked Node 20 and `uv` in PATH, and the default simulated log file was missing from repository assets.
 - Recommendation for next cycle: Keep launcher preflight checks strict, pin dev prerequisites in onboarding docs, and include at least one always-present simulated `.log` fixture in release readiness checks.
 - Related links:
-  - `docs/ci-cd.md`
+  - `docs/cicd/README.md`
   - `README.md`
   - `scripts/ops/dev-up.sh`
   - `scripts/ops/dev-up.ps1`
@@ -52,5 +52,5 @@ Chronological lessons learned from merged pull requests and completed release cy
 - What failed or caused friction: Full in-session automated translation of `docs/standards/dali.md` was blocked by network policy to translation endpoints.
 - Recommendation for next cycle: Execute controlled human-reviewed section translation using the dedicated migration task plan and preserve source parity checks.
 - Related links:
-  - `docs/tasks/repo-hygiene-closeout-2026-04-28.md`
-  - `docs/tasks/dali-doc-english-migration-plan.md`
+  - `docs/tasks/reports/repo-hygiene-closeout-2026-04-28.md`
+  - `docs/tasks/reports/dali-doc-english-migration-plan.md`

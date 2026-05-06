@@ -9,9 +9,18 @@ For all new functionality and material changes:
 1. Confirm branch + PR flow with the user.
 2. Create a dedicated branch.
 3. Implement and validate in that branch.
-4. Push and open PR before handoff.
+4. Complete `Documentation Impact` and `Backlog Review` updates before PR.
+5. Push and open PR before handoff.
 
 No direct work on `main` is allowed.
+
+## Documentation and Backlog Review Protocol (Per PR)
+
+1. Map code/process changes to docs updates using `docs/agent/documentation-governance.md`.
+2. Update impacted docs in the same PR.
+3. Update `docs/tasks/backlog.md`.
+4. Move completed items to `docs/tasks/done-log.md` if applicable.
+5. Add one short iteration note in `docs/tasks/iterations/`.
 
 ## Learning and Decision Log Protocol
 
@@ -41,4 +50,4 @@ Direct log updates to `main` are not allowed.
 3. Record known risks.
 4. Assign next owner explicitly.
 
-Template: `docs/tasks/handoff-template.md`.
+Template: `docs/tasks/templates/handoff-template.md`.

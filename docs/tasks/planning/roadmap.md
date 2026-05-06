@@ -3,9 +3,9 @@
 ## Stage 1: Foundation (Q2 2026)
 
 - [x] Agent-first documentation baseline (`agents.md`, `docs/`, `CHANGELOG.md`)
-- [ ] Improve backend and frontend README files
-- [ ] Standardize local development commands
-- [ ] Add Definition of Done checklist to PR process
+- [x] Improve root onboarding and documentation map
+- [x] Standardize local development commands
+- [x] Add PR-level documentation and backlog review checklist
 
 ## Stage 2: Reliability (Q2-Q3 2026)
 
@@ -23,6 +23,6 @@
 
 ## Stage 4: Agent Scale-out (Q3-Q4 2026)
 
-- [ ] Automate register updates (`projects`, ADRs, changelog)
+- [ ] Automate register updates (`backlog`, ADRs, changelog)
 - [ ] Add role-specific agent templates (triage, implementation, review, release)
 - [ ] Track throughput and lead time metrics

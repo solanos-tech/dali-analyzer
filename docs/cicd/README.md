@@ -159,3 +159,12 @@ These are the commands used by humans to control environment context and release
 If active context is `prod`, `make deploy` fails by design with:
 
 `deploy is disabled for 'prod'. Use release-prepare and release-publish.`
+
+## 7. Documentation and Backlog Compliance Model
+
+- This repository does not use a dedicated hard CI gate for docs/backlog updates.
+- Compliance is enforced through:
+  - `agents.md` mandatory workflow rules
+  - `docs/agent/documentation-governance.md` mapping
+  - `.github/pull_request_template.md` required sections
+  - reviewer discipline during PR evaluation
