@@ -1,6 +1,6 @@
 [project]
 name = "dali-analyzer-backend"
-version = "0.9.3"
+version = "0.9.4"
 description = "Backend for dali-sniffer analysis and visualization"
 readme = "README.md"
 requires-python = ">=3.12"

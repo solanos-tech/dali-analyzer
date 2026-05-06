@@ -6,6 +6,10 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 
 ## [Unreleased]
 
+- _No changes yet._
+
+## [0.9.4] - 2026-05-06
+
 ### Added
 
 - Added CI triage operational playbook for agent-driven PR supervision:
