@@ -6,7 +6,21 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 
 ## [Unreleased]
 
-- _No changes yet._
+### Added
+
+- Added AGPLv3 project licensing assets and metadata:
+  - `LICENSE`
+  - `LICENSE-FAQ.md`
+  - license metadata in backend/frontend package manifests
+- Added visible frontend app version label in UI (`Version: X.Y.Z`).
+- Added runtime launcher diagnostics with version reporting after readiness:
+  - backend version
+  - frontend version
+
+### Changed
+
+- Updated root `README.md` with a dedicated AGPLv3 `License` section.
+- Updated runtime package README with launcher diagnostics/version note.
 
 ## [0.9.4] - 2026-05-06
 

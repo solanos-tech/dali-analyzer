@@ -3,6 +3,7 @@ name = "dali-analyzer-backend"
 version = "0.9.4"
 description = "Backend for dali-sniffer analysis and visualization"
 readme = "README.md"
+license = { text = "AGPL-3.0-or-later" }
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.135.3",

@@ -13,6 +13,28 @@ port="${DALI_RUNTIME_PORT:-8000}"
 health_url="http://${host}:${port}/health"
 ui_url="http://${host}:${port}"
 
+resolve_backend_version() {
+  local python_path="$1"
+  local version="unknown"
+  if version="$("${python_path}" -c "import importlib.metadata as m; print(m.version('dali-analyzer-backend'))" 2>/dev/null)"; then
+    if [[ -n "${version}" ]]; then
+      echo "${version}"
+      return
+    fi
+  fi
+  echo "unknown"
+}
+
+resolve_frontend_version() {
+  local package_json_path="${root_dir}/frontend/package.json"
+  local python_path="$1"
+  if [[ -f "${package_json_path}" ]]; then
+    "${python_path}" -c "import json; print(json.load(open('${package_json_path}', encoding='utf-8')).get('version', 'unknown'))" 2>/dev/null || true
+    return
+  fi
+  echo "unknown"
+}
+
 require_cmd() {
   local cmd="$1"
   if ! command -v "${cmd}" >/dev/null 2>&1; then
@@ -120,6 +142,9 @@ if [[ "${ready}" != "true" ]]; then
 fi
 
 echo "Runtime is READY"
+echo "Diagnostics:"
+echo "Backend version: $(resolve_backend_version "${backend_venv}/bin/python")"
+echo "Frontend version: $(resolve_frontend_version "${backend_venv}/bin/python")"
 echo "UI URL: ${ui_url}"
 echo "Health URL: ${health_url}"
 echo "Logs: ${backend_log}"

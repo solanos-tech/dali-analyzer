@@ -12,6 +12,35 @@ $port = if ($env:DALI_RUNTIME_PORT) { [int]$env:DALI_RUNTIME_PORT } else { 8000 
 $baseUrl = "http://$hostAddress`:$port"
 $healthUrl = "$baseUrl/health"
 
+function Resolve-BackendVersion {
+    param(
+        [string]$PythonPath
+    )
+    try {
+        $version = & $PythonPath -c "import importlib.metadata as m; print(m.version('dali-analyzer-backend'))" 2>$null
+        if ($version) {
+            return $version.Trim()
+        }
+    } catch {}
+    return "unknown"
+}
+
+function Resolve-FrontendVersion {
+    param(
+        [string]$RootDir
+    )
+    try {
+        $packageJsonPath = Join-Path $RootDir "frontend\\package.json"
+        if (Test-Path $packageJsonPath) {
+            $packageJson = Get-Content -Path $packageJsonPath -Raw | ConvertFrom-Json
+            if ($packageJson.version) {
+                return "$($packageJson.version)"
+            }
+        }
+    } catch {}
+    return "unknown"
+}
+
 function Resolve-PythonCommand {
     $py = Get-Command py -ErrorAction SilentlyContinue
     if ($py) {
@@ -111,6 +140,9 @@ if (-not $ready) {
 }
 
 Write-Output "Runtime is READY"
+Write-Output "Diagnostics:"
+Write-Output "Backend version: $(Resolve-BackendVersion -PythonPath $backendPython)"
+Write-Output "Frontend version: $(Resolve-FrontendVersion -RootDir $rootDir)"
 Write-Output "UI URL: $baseUrl"
 Write-Output "Health URL: $healthUrl"
 Write-Output "Logs: $backendLog"

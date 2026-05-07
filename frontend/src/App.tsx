@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 prudek
 import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import {
@@ -29,6 +31,7 @@ type FilterState = {
 }
 
 const DEFAULT_LOG = 'sniffer_log_example.log'
+const APP_VERSION = __APP_VERSION__
 
 const formatConfidence = (value: number) => `${Math.round(value * 100)}%`
 const formatRelativeTime = (deltaMs: number) => {
@@ -329,6 +332,7 @@ function App() {
         <div>
           <h1>DALI Decode Monitor</h1>
           <p>Backend-decoded frames with live stream, semantic status and transaction correlation.</p>
+          <p className="app-version">Version: {APP_VERSION}</p>
         </div>
         <div className="live-indicator">
           <span className={`dot ${isLive ? 'on' : 'off'}`} />

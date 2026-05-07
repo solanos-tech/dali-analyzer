@@ -112,3 +112,13 @@ Detailed CI/CD and command flow: [docs/cicd/README.md](docs/cicd/README.md).
 - [docs/README.md](docs/README.md) - documentation map
 - [docs/cicd/README.md](docs/cicd/README.md) - CI/CD overview and policy gates
 - [CHANGELOG.md](CHANGELOG.md) - change history
+
+## License
+
+This project is licensed under the GNU Affero General Public License v3.0 (AGPLv3).
+
+This means that you may use, study, modify, and redistribute this software under the terms of the AGPLv3. If you modify this software or make it available to users over a network, including as part of a hosted service, SaaS platform, internal web application, commissioning tool, diagnostic system, or product-integrated service, you must make the corresponding source code available under the same license.
+
+For use cases where AGPLv3 obligations are not acceptable, including proprietary or closed-source commercial integrations, please contact the project owner to discuss a separate commercial license.
+
+See the LICENSE file for the full license text.

@@ -44,6 +44,13 @@
   color: var(--ink-700);
 }
 
+.app-header .app-version {
+  margin-top: 0.45rem;
+  font-size: 0.9rem;
+  color: var(--ink-500);
+  font-weight: 600;
+}
+
 .live-indicator {
   display: inline-flex;
   align-items: center;
