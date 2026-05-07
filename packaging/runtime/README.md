@@ -53,6 +53,8 @@ No global Python environment changes are required.
 - `.runtime/backend.log`
 - `.runtime/backend.err.log`
 
+After startup reaches `Runtime is READY`, launchers print a short diagnostic block including backend and frontend versions.
+
 ## Optional: remote backend mode
 
 Edit `config/runtime-config.json`:
