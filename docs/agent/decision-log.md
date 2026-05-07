@@ -48,3 +48,11 @@ Operational decision register updated after merged pull requests and successful 
 - Related links:
   - `docs/tasks/reports/repo-hygiene-closeout-2026-04-28.md`
   - `docs/tasks/reports/dali-doc-english-migration-plan.md`
+
+- Date (UTC): 2026-05-07T12:39:06Z
+- Event key: pr-23-1bc623ba7eda517bf43177f8bd5935a2167cacb5
+- Trigger: merged pull request
+- Decision: retain branch+PR workflow and create post-merge knowledge artifacts
+- Rationale: merged increments should leave audit-ready operational traces
+- Impact: improves repository memory and onboarding continuity
+- Related links: PR #23 (Apply AGPLv3 licensing and version visibility in UI/runtime) by @prudek - https://github.com/prudek/dali-analyzer/pull/23
