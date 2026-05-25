@@ -1,9 +1,5 @@
 # DALI Decoder Lookup - IEC 62386-101/102/103
 
-I understand the scope. I would prepare this as a **Markdown lookup for the decoder**, but one thing should be stated explicitly up front: if this is meant to be truly complete and safe for implementation, it should still be validated against the exact IEC 62386-101/102/103 revision used in this project. What follows is a **working structure and first implementation-grade lookup table**, already shaped so it can be maintained further.
-
-Working assumptions:
-
 ```text
 IEC 62386-101 - system layer / frame types / timing / forward/backward
 IEC 62386-102 - control gear: power supplies, ballasts, LED drivers
