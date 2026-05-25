@@ -1,15 +1,3 @@
-Rozumiem zakres. Przygotowałbym to jako **Markdown lookup dla dekodera**, ale od razu zaznaczę jedną rzecz: żeby to było naprawdę „kompletne” i bezpieczne implementacyjnie, warto zrobić to etapami i potem porównać z konkretną wersją normy IEC 62386-101/102/103, której używasz w projekcie. Poniżej daję Ci **szkielet i pierwszą wersję tabel lookup**, w formacie już nadającym się do dalszego utrzymywania.
-
-Przyjmuję roboczo:
-
-```text
-IEC 62386-101 — warstwa systemowa / typy ramek / timing / forward/backward
-IEC 62386-102 — control gear, czyli zasilacze, ballasty, LED drivers
-IEC 62386-103 — control devices, czyli czujniki, przyciski, panele, kontrolery wejść
-```
-
----
-
 # DALI decoder lookup — IEC 62386-101/102/103
 
 ## 1. Typy ramek — IEC 62386-101
