@@ -7,7 +7,8 @@ It ingests raw frame streams, classifies and decodes them in the backend, and ex
 REST/SSE data for a browser UI.
 
 
-<img width="1737" height="838" alt="image" src="https://github.com/user-attachments/assets/d221a36f-7e05-4a58-841f-fe7c55d058ef" />
+<img width="1877" height="860" alt="image" src="https://github.com/user-attachments/assets/f8386249-47fd-4211-aa66-dd9f92344071" />
+
 
 
 
