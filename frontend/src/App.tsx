@@ -34,6 +34,7 @@ type FilterState = {
 }
 
 type AnalyzerTab = 'frames' | 'timeline' | 'analytics'
+type DetailsTab = 'summary' | 'params' | 'warnings' | 'raw'
 
 type AnalyzerStats = {
   frameCount: number
@@ -476,7 +477,10 @@ function FrameLogTable({
     const visibleBottom = visibleTop + container.clientHeight
 
     if (rowTop < visibleTop || rowBottom > visibleBottom) {
-      row.scrollIntoView({ block: 'center' })
+      container.scrollTo({
+        top: Math.max(rowTop - container.clientHeight / 2 + row.offsetHeight / 2, 0),
+        behavior: 'smooth',
+      })
     }
   }, [selectedIndex, frames])
 
@@ -548,6 +552,7 @@ function FrameLogTable({
 
 function FrameDetailsPanel({ frame }: { frame: DecodedFrameRecord | null }) {
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [activeDetailsTab, setActiveDetailsTab] = useState<DetailsTab>('summary')
   const paramsJson = frame ? JSON.stringify(frame.decoded.params, null, 2) : '{}'
 
   const copyParams = async () => {
@@ -581,46 +586,94 @@ function FrameDetailsPanel({ frame }: { frame: DecodedFrameRecord | null }) {
 
       {frame && !isCollapsed && (
         <>
-          <div className="detail-grid">
+          <div className="selected-frame-summary">
+            <span className={`badge badge-direction ${frame.raw.direction}`}>{frame.raw.direction}</span>
+            <strong title={frame.decoded.name}>{frame.decoded.name}</strong>
+            <code>{frame.raw.raw_hex}</code>
+          </div>
+
+          <div className="detail-grid compact">
             <DetailValue label="Frame class" value={frame.decoded.frame_class} />
-            <DetailValue label="Addressing" value={frame.decoded.addressing} />
             <DetailValue label="Opcode" value={frame.decoded.opcode} />
-            <DetailValue label="Confidence" value={formatConfidence(frame.decoded.confidence)} />
             <DetailValue label="Correlation ID" value={frame.transaction.correlation_id} />
             <DetailValue
               label="Latency"
               value={frame.transaction.latency_ms !== null ? `${frame.transaction.latency_ms} ms` : null}
             />
-            <DetailValue label="Semantic level" value={frame.decoded.semantic_level} />
-            <DetailValue label="Semantic name" value={frame.decoded.semantic_name} />
+            <DetailValue label="Status" value={frame.decoded.status} />
+            <DetailValue label="Confidence" value={formatConfidence(frame.decoded.confidence)} />
           </div>
 
-          <section className="json-block">
-            <div className="section-heading">
-              <h3>Params ({Object.keys(frame.decoded.params).length})</h3>
-              <button type="button" className="icon-button light" title="Copy params JSON" aria-label="Copy params JSON" onClick={copyParams}>
-                copy
+          <nav className="details-tabs" aria-label="Frame detail sections">
+            {(['summary', 'params', 'warnings', 'raw'] as DetailsTab[]).map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                className={activeDetailsTab === tab ? 'active' : ''}
+                onClick={() => setActiveDetailsTab(tab)}
+              >
+                {tab[0].toUpperCase()}
+                {tab.slice(1)}
               </button>
-            </div>
-            <pre>{paramsJson}</pre>
-          </section>
+            ))}
+          </nav>
 
-          <details className="detail-section" open>
+          {activeDetailsTab === 'summary' && (
+            <div className="detail-grid secondary">
+              <DetailValue label="Addressing" value={frame.decoded.addressing} />
+              <DetailValue label="Semantic level" value={frame.decoded.semantic_level} />
+              <DetailValue label="Semantic name" value={frame.decoded.semantic_name} />
+              <DetailValue label="Bit length" value={`${frame.raw.bit_length}`} />
+              <DetailValue label="Source" value={frame.raw.source} />
+              <DetailValue label="Backward raw" value={frame.transaction.backward_raw_hex} />
+            </div>
+          )}
+
+          {activeDetailsTab === 'params' && (
+            <section className="json-block">
+              <div className="section-heading">
+                <h3>Params ({Object.keys(frame.decoded.params).length})</h3>
+                <button
+                  type="button"
+                  className="icon-button light"
+                  title="Copy params JSON"
+                  aria-label="Copy params JSON"
+                  onClick={copyParams}
+                >
+                  copy
+                </button>
+              </div>
+              <pre>{paramsJson}</pre>
+            </section>
+          )}
+
+          {activeDetailsTab === 'warnings' && (
+            <section className="detail-section panel-section">
+              <h3>Warnings ({frame.decoded.warnings.length})</h3>
+              {frame.decoded.warnings.length === 0 ? (
+                <p className="subtle">No warnings</p>
+              ) : (
+                <ul>
+                  {frame.decoded.warnings.map((warning) => (
+                    <li key={warning}>{warning}</li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          )}
+
+          {activeDetailsTab === 'raw' && (
+            <section className="json-block">
+              <div className="section-heading">
+                <h3>Raw frame JSON</h3>
+              </div>
+              <pre>{JSON.stringify(frame, null, 2)}</pre>
+            </section>
+          )}
+
+          <details className="detail-section compact-breakdown" open>
             <summary>Decoded breakdown</summary>
             <p>{buildDecodedBreakdown(frame) || 'No decoded breakdown available.'}</p>
-          </details>
-
-          <details className="detail-section" open>
-            <summary>Warnings ({frame.decoded.warnings.length})</summary>
-            {frame.decoded.warnings.length === 0 ? (
-              <p className="subtle">No warnings</p>
-            ) : (
-              <ul>
-                {frame.decoded.warnings.map((warning) => (
-                  <li key={warning}>{warning}</li>
-                ))}
-              </ul>
-            )}
           </details>
         </>
       )}
@@ -689,6 +742,7 @@ function BusActivityMiniTimeline({
   }
 
   const handleTimelinePointer = (event: ReactPointerEvent<HTMLDivElement>) => {
+    event.preventDefault()
     event.currentTarget.setPointerCapture(event.pointerId)
     selectNearestFrame(event.clientX)
   }
@@ -729,6 +783,7 @@ function BusActivityMiniTimeline({
             onPointerDown={handleTimelinePointer}
             onPointerMove={(event) => {
               if (event.buttons === 1) {
+                event.preventDefault()
                 selectNearestFrame(event.clientX)
               }
             }}
@@ -1289,6 +1344,12 @@ function App() {
 
       {activeTab === 'frames' && (
         <>
+          <BusActivityMiniTimeline
+            frames={filteredFrames}
+            stats={stats}
+            selectedIndex={selectedIndex}
+            onSelectFrame={setSelectedIndex}
+          />
           <section className="split-view" aria-label="Decoded frames view">
             <FrameLogTable
               frames={filteredFrames}
@@ -1299,12 +1360,6 @@ function App() {
             />
             <FrameDetailsPanel frame={selectedFrame} />
           </section>
-          <BusActivityMiniTimeline
-            frames={filteredFrames}
-            stats={stats}
-            selectedIndex={selectedIndex}
-            onSelectFrame={setSelectedIndex}
-          />
         </>
       )}
 

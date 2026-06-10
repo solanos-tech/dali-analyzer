@@ -341,12 +341,13 @@ button:disabled {
   grid-template-columns: minmax(0, 1fr) minmax(320px, 430px);
   gap: 12px;
   align-items: start;
-  padding: 10px 0;
+  padding: 0 0 10px;
 }
 
 .table-panel {
   min-width: 0;
-  max-height: calc(100vh - 282px);
+  max-height: calc(100vh - 346px);
+  overscroll-behavior: contain;
   overflow: auto;
   border-radius: var(--radius-md);
 }
@@ -531,6 +532,14 @@ code {
   gap: 7px;
 }
 
+.detail-grid.compact {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.detail-grid.secondary {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .detail-grid > div {
   min-height: 52px;
   padding: 8px 9px;
@@ -594,13 +603,70 @@ code {
   color: var(--color-text-muted);
 }
 
+.detail-section h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+}
+
 .detail-section ul {
   margin: 8px 0 0;
   padding-left: 18px;
 }
 
+.selected-frame-summary {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  margin-top: 9px;
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-muted);
+}
+
+.selected-frame-summary strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.details-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: 8px;
+  padding: 4px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-muted);
+}
+
+.details-tabs button {
+  min-height: 30px;
+  padding: 5px 6px;
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.details-tabs button.active {
+  border-color: var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-primary);
+}
+
+.panel-section {
+  min-height: 126px;
+}
+
+.compact-breakdown {
+  background: var(--color-surface-muted);
+}
+
 .mini-timeline {
-  margin-bottom: 12px;
+  margin: 10px 0 12px;
   padding: 8px 14px;
   border-radius: var(--radius-md);
 }
