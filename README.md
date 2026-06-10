@@ -39,6 +39,55 @@ Example line:
 [2026-05-05 10:00:00.180] sniffer ts_ms=80 dir=rx_forward24 raw=0x01FE30
 ```
 
+## Sniffer Hardware Option
+
+Live serial capture requires a DALI sniffer that can observe bus traffic and
+emit terminal-friendly frame events. One compatible starting point is
+[solanos-tech/dali-tap-bridge-pic18](https://github.com/solanos-tech/dali-tap-bridge-pic18),
+which provides firmware for the Microchip `PIC18F47K42 Curiosity Nano`.
+
+That repository focuses on a minimal DALI sniffer / control-device terminal
+bridge:
+
+- observes DALI traffic and reports raw forward and backward frame events
+- uses `UART1` for DALI transport (`RC2`/`RC3`)
+- uses `UART2` as a `115200 8N1` debug terminal (`RD0`/`RD1`)
+- supports terminal commands such as `help`, `status`, `sniffer on`,
+  `sniffer off`, `dali stats`, `send 16`, and `send 24`
+- includes documentation for hardware wiring, terminal commands, and building
+  the MPLAB X project
+
+High-level bring-up flow:
+
+1. Get the required hardware: a `PIC18F47K42 Curiosity Nano`, a proper DALI
+   physical front-end / driver stage between the MCU and the bus, and a UART
+   connection for the debug terminal.
+2. Review the sniffer repository documentation, especially
+   [`docs/hardware.md`](https://github.com/solanos-tech/dali-tap-bridge-pic18/blob/main/docs/hardware.md)
+   and
+   [`docs/terminal.md`](https://github.com/solanos-tech/dali-tap-bridge-pic18/blob/main/docs/terminal.md).
+3. Build the firmware from the sniffer repository with the documented MPLAB X
+   project command:
+
+   ```powershell
+   make -f nbproject\Makefile-default.mk SUBPROJECTS= .build-conf
+   ```
+
+4. Flash the firmware to the Curiosity Nano using the normal Microchip/MPLAB X
+   tooling for that board.
+5. Wire the DALI bus through the physical front-end, keeping the debug terminal
+   isolated from the DALI bus.
+6. Open the terminal at `115200 8N1`, run `sniffer on`, and capture the emitted
+   frame lines.
+7. Connect DALI Protocol Analyzer to the serial terminal stream, or save the
+   terminal output as a log and inspect it through the analyzer's simulated log
+   workflow.
+
+The sniffer firmware can report observations such as `rx_forward16`,
+`rx_forward24`, `rx_backward`, `tx_forward16_local`, and
+`tx_forward24_local`. When integrating new firmware output with this analyzer,
+keep the emitted lines aligned with the input stream shape documented above.
+
 ## Developer/Repository Guide
 
 ### Quick Start

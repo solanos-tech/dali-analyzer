@@ -6,6 +6,11 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 
 ## [Unreleased]
 
+### Added
+
+- Added root README guidance for building and using a PIC18-based DALI sniffer
+  with `solanos-tech/dali-tap-bridge-pic18`.
+
 ## [0.9.5] - 2026-06-10
 
 ### Added
