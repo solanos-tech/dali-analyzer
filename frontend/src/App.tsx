@@ -463,6 +463,7 @@ function FrameLogTable({
 }) {
   const tableScrollRef = useRef<HTMLDivElement | null>(null)
   const rowRefs = useRef<(HTMLTableRowElement | null)[]>([])
+  const scrollFrameRef = useRef<number | null>(null)
 
   useEffect(() => {
     const row = rowRefs.current[selectedIndex]
@@ -484,8 +485,51 @@ function FrameLogTable({
     }
   }, [selectedIndex, frames])
 
+  useEffect(() => {
+    return () => {
+      if (scrollFrameRef.current !== null) {
+        window.cancelAnimationFrame(scrollFrameRef.current)
+      }
+    }
+  }, [])
+
+  const handleTableScroll = () => {
+    if (scrollFrameRef.current !== null) {
+      return
+    }
+
+    scrollFrameRef.current = window.requestAnimationFrame(() => {
+      scrollFrameRef.current = null
+      const container = tableScrollRef.current
+      if (!container || frames.length === 0) {
+        return
+      }
+
+      const viewportCenter = container.scrollTop + container.clientHeight / 2
+      let nearestIndex = selectedIndex
+      let nearestDistance = Number.POSITIVE_INFINITY
+
+      rowRefs.current.forEach((row, index) => {
+        if (!row) {
+          return
+        }
+
+        const rowCenter = row.offsetTop + row.offsetHeight / 2
+        const distance = Math.abs(rowCenter - viewportCenter)
+        if (distance < nearestDistance) {
+          nearestIndex = index
+          nearestDistance = distance
+        }
+      })
+
+      if (nearestIndex !== selectedIndex) {
+        onSelectFrame(nearestIndex)
+      }
+    })
+  }
+
   return (
-    <div className="table-panel" ref={tableScrollRef}>
+    <div className="table-panel" ref={tableScrollRef} onScroll={handleTableScroll}>
       <table>
         <thead>
           <tr>
@@ -671,7 +715,7 @@ function FrameDetailsPanel({ frame }: { frame: DecodedFrameRecord | null }) {
             </section>
           )}
 
-          <details className="detail-section compact-breakdown" open>
+          <details className="detail-section compact-breakdown">
             <summary>Decoded breakdown</summary>
             <p>{buildDecodedBreakdown(frame) || 'No decoded breakdown available.'}</p>
           </details>
