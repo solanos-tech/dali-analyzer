@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 prudek
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { ReactNode } from 'react'
+import type { PointerEvent as ReactPointerEvent, ReactNode } from 'react'
 import './App.css'
 import {
   connectSerial,
@@ -460,8 +460,28 @@ function FrameLogTable({
   isLoading: boolean
   onSelectFrame: (index: number) => void
 }) {
+  const tableScrollRef = useRef<HTMLDivElement | null>(null)
+  const rowRefs = useRef<(HTMLTableRowElement | null)[]>([])
+
+  useEffect(() => {
+    const row = rowRefs.current[selectedIndex]
+    const container = tableScrollRef.current
+    if (!row || !container) {
+      return
+    }
+
+    const rowTop = row.offsetTop
+    const rowBottom = rowTop + row.offsetHeight
+    const visibleTop = container.scrollTop
+    const visibleBottom = visibleTop + container.clientHeight
+
+    if (rowTop < visibleTop || rowBottom > visibleBottom) {
+      row.scrollIntoView({ block: 'center' })
+    }
+  }, [selectedIndex, frames])
+
   return (
-    <div className="table-panel">
+    <div className="table-panel" ref={tableScrollRef}>
       <table>
         <thead>
           <tr>
@@ -480,6 +500,9 @@ function FrameLogTable({
           {frames.map((frame, index) => (
             <tr
               key={`${frame.raw.ts_ms}-${frame.raw.raw_hex}-${index}`}
+              ref={(element) => {
+                rowRefs.current[index] = element
+              }}
               className={index === selectedIndex ? 'selected-row' : ''}
               onClick={() => onSelectFrame(index)}
             >
@@ -618,12 +641,57 @@ function DetailValue({ label, value }: { label: string; value: string | number |
 function BusActivityMiniTimeline({
   frames,
   stats,
+  selectedIndex,
+  onSelectFrame,
 }: {
   frames: DecodedFrameRecord[]
   stats: AnalyzerStats
+  selectedIndex: number
+  onSelectFrame: (index: number) => void
 }) {
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const trackRef = useRef<HTMLDivElement | null>(null)
   const ticks = useMemo(() => buildTimelineTicks(frames), [frames])
+  const timelineBounds = useMemo(() => {
+    if (frames.length === 0) {
+      return null
+    }
+    const minTs = frames.reduce((value, frame) => Math.min(value, frame.raw.ts_ms), frames[0].raw.ts_ms)
+    const maxTs = frames.reduce((value, frame) => Math.max(value, frame.raw.ts_ms), frames[0].raw.ts_ms)
+    return { minTs, maxTs, span: Math.max(maxTs - minTs, 1) }
+  }, [frames])
+  const markerLeft =
+    timelineBounds && frames[selectedIndex]
+      ? ((frames[selectedIndex].raw.ts_ms - timelineBounds.minTs) / timelineBounds.span) * 100
+      : 0
+
+  const selectNearestFrame = (clientX: number) => {
+    const track = trackRef.current
+    if (!track || !timelineBounds || frames.length === 0) {
+      return
+    }
+
+    const rect = track.getBoundingClientRect()
+    const ratio = Math.min(Math.max((clientX - rect.left) / rect.width, 0), 1)
+    const targetTs = timelineBounds.minTs + timelineBounds.span * ratio
+    let nearestIndex = 0
+    let nearestDistance = Math.abs(frames[0].raw.ts_ms - targetTs)
+
+    frames.forEach((frame, index) => {
+      const distance = Math.abs(frame.raw.ts_ms - targetTs)
+      if (distance < nearestDistance) {
+        nearestIndex = index
+        nearestDistance = distance
+      }
+    })
+
+    onSelectFrame(nearestIndex)
+  }
+
+  const handleTimelinePointer = (event: ReactPointerEvent<HTMLDivElement>) => {
+    event.currentTarget.setPointerCapture(event.pointerId)
+    selectNearestFrame(event.clientX)
+  }
 
   return (
     <section className={`mini-timeline ${isCollapsed ? 'collapsed' : ''}`} aria-label="Bus activity timeline">
@@ -649,7 +717,32 @@ function BusActivityMiniTimeline({
       </div>
       {!isCollapsed && (
         <>
-          <div className="timeline-track">
+          <div
+            className="timeline-track"
+            ref={trackRef}
+            role="slider"
+            aria-label="Timeline time marker"
+            aria-valuemin={timelineBounds?.minTs ?? 0}
+            aria-valuemax={timelineBounds?.maxTs ?? 0}
+            aria-valuenow={frames[selectedIndex]?.raw.ts_ms ?? 0}
+            tabIndex={0}
+            onPointerDown={handleTimelinePointer}
+            onPointerMove={(event) => {
+              if (event.buttons === 1) {
+                selectNearestFrame(event.clientX)
+              }
+            }}
+            onKeyDown={(event) => {
+              if (event.key === 'ArrowLeft') {
+                event.preventDefault()
+                onSelectFrame(Math.max(selectedIndex - 1, 0))
+              }
+              if (event.key === 'ArrowRight') {
+                event.preventDefault()
+                onSelectFrame(Math.min(selectedIndex + 1, frames.length - 1))
+              }
+            }}
+          >
             {ticks.length === 0 && <span className="empty-inline">No activity</span>}
             {ticks.map((tick) => (
               <span
@@ -658,6 +751,15 @@ function BusActivityMiniTimeline({
                 style={{ left: `${tick.left}%`, height: `${tick.height}px` }}
               />
             ))}
+            {frames.length > 0 && (
+              <span
+                className="timeline-marker"
+                style={{ left: `${markerLeft}%` }}
+                title={`Selected frame ts_ms=${frames[selectedIndex]?.raw.ts_ms ?? 0}`}
+              >
+                <span className="timeline-marker-handle" />
+              </span>
+            )}
           </div>
           <div className="timeline-axis">
             <span>Window</span>
@@ -684,7 +786,12 @@ function TimelineView({
   return (
     <section className="analytics-layout" aria-label="Timeline and analytics preview">
       <div className="analytics-main">
-        <BusActivityMiniTimeline frames={frames} stats={stats} />
+        <BusActivityMiniTimeline
+          frames={frames}
+          stats={stats}
+          selectedIndex={0}
+          onSelectFrame={() => undefined}
+        />
         <div className="event-lanes">
           <h2>Decoded event lanes</h2>
           <div className="lane-grid">
@@ -1192,7 +1299,12 @@ function App() {
             />
             <FrameDetailsPanel frame={selectedFrame} />
           </section>
-          <BusActivityMiniTimeline frames={filteredFrames} stats={stats} />
+          <BusActivityMiniTimeline
+            frames={filteredFrames}
+            stats={stats}
+            selectedIndex={selectedIndex}
+            onSelectFrame={setSelectedIndex}
+          />
         </>
       )}
 

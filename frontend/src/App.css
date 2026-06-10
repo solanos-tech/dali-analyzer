@@ -654,6 +654,13 @@ code {
   margin-top: 8px;
   border-bottom: 1px solid var(--color-border);
   background-image: repeating-linear-gradient(to right, transparent 0, transparent 30px, #e8eef7 31px);
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.timeline-track:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .timeline-tick {
@@ -672,6 +679,31 @@ code {
 .timeline-tick.error {
   width: 4px;
   background: var(--color-danger);
+}
+
+.timeline-marker {
+  position: absolute;
+  top: -5px;
+  bottom: -8px;
+  width: 2px;
+  transform: translateX(-50%);
+  background: var(--color-primary);
+  box-shadow: 0 0 0 1px rgba(29, 95, 208, 0.18), 0 0 0 6px rgba(29, 95, 208, 0.08);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.timeline-marker-handle {
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  transform: translateX(-50%);
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.24);
 }
 
 .timeline-axis {
