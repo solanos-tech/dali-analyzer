@@ -60,3 +60,11 @@ Operational decision register updated after merged pull requests and successful 
 - Related links:
   - `docs/tasks/reports/repo-hygiene-closeout-2026-04-28.md`
   - `docs/tasks/reports/dali-doc-english-migration-plan.md`
+
+- Date (UTC): 2026-06-10T09:28:35Z
+- Event key: pr-25-40b02dbe0ac37332c96d4eeb92608c11c8126efb
+- Trigger: merged pull request
+- Decision: retain branch+PR workflow and create post-merge knowledge artifacts
+- Rationale: merged increments should leave audit-ready operational traces
+- Impact: improves repository memory and onboarding continuity
+- Related links: PR #25 (docs: sync release 0.9.5 status) by @prudek - https://github.com/solanos-tech/dali-analyzer/pull/25
