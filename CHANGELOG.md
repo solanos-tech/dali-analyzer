@@ -6,6 +6,8 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.9.5] - 2026-06-10
+
 ### Added
 
 - Added compact `DALI Protocol Analyzer` frontend redesign:
