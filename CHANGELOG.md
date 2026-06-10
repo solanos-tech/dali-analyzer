@@ -32,6 +32,7 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 - Updated frontend module documentation for the compact analyzer layout and frontend-derived analytics previews.
 - Updated root `README.md` with a dedicated AGPLv3 `License` section.
 - Updated runtime package README with launcher diagnostics/version note.
+- Published the release as `v0.9.5` on `2026-06-10`.
 
 ## [0.9.4] - 2026-05-06
 

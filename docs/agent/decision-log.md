@@ -14,6 +14,18 @@ Operational decision register updated after merged pull requests and successful 
 
 ## Entries
 
+- Date (UTC): 2026-06-10
+- Event key: release-0-9-5-docs-closeout-alignment
+- Trigger: Final release closeout for the DALI Protocol Analyzer UI redesign.
+- Decision: Treat merged release work, changelog status, backlog status, and iteration notes as a single closeout set and update them together before tagging.
+- Rationale: Release history is easier to trust when the shipped version, task tracker, and learning logs all reflect the same state.
+- Impact: `main`, `CHANGELOG.md`, backlog/done-log, and iteration notes now describe the same published `v0.9.5` state.
+- Related links:
+  - `CHANGELOG.md`
+  - `docs/tasks/backlog.md`
+  - `docs/tasks/done-log.md`
+  - `docs/tasks/iterations/2026-06-10-release-0-9-5.md`
+
 - Date (UTC): 2026-05-05
 - Event key: runtime-release-draft-gate-and-wheel-spec-contract
 - Trigger: Runtime package verification and failed post-release diagnostics on `v0.9.2`.
