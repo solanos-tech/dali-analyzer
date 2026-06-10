@@ -15,6 +15,20 @@ Chronological lessons learned from merged pull requests and completed release cy
 
 ## Entries
 
+- Date (UTC): 2026-06-10
+- Event key: dali-protocol-analyzer-ui-redesign-release-0-9-5
+- Trigger: Frontend redesign merged and release `v0.9.5` published.
+- What changed: The DALI Protocol Analyzer UI redesign was merged, documentation status was refreshed, the backlog item was closed out, and release tag `v0.9.5` was pushed from `main`.
+- What improved: Repo history now matches the shipped state, and operational docs no longer imply that the UI redesign or release are still pending.
+- What failed or caused friction: None in the final closeout pass beyond earlier GitHub auth limitations for direct PR metadata edits.
+- Recommendation for next cycle: Keep backlog, done-log, and iteration notes synchronized immediately after merge and before tagging a release.
+- Related links:
+  - `CHANGELOG.md`
+  - `docs/tasks/backlog.md`
+  - `docs/tasks/done-log.md`
+  - `docs/tasks/iterations/2026-06-10-dali-protocol-analyzer-ui-redesign.md`
+  - `docs/tasks/iterations/2026-06-10-release-0-9-5.md`
+
 - Date (UTC): 2026-05-05
 - Event key: runtime-release-zip-gating-and-wheel-spec-hotfix
 - Trigger: Release cycle `v0.9.1` to `v0.9.3` after introducing runtime/source ZIP packaging and blocking acceptance gates.
