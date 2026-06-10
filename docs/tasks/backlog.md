@@ -20,6 +20,7 @@ Single source of truth for active iteration work.
 | BKL-005 | Standardize agent auto-PR and CI supervision loop | P1 | done-ready | team | 2026-05-06 | Merge PR #21 and move to done-log | 2026-05-06 |
 | BKL-006 | Prepare release 0.9.4 (version bump + changelog) | P1 | done-ready | team | 2026-05-06 | Merge release PR, then run release publish from main | 2026-05-06 |
 | BKL-007 | Apply AGPLv3 licensing plan (1:1) | P1 | done-ready | team | 2026-05-07 | Merge AGPL + version visibility PR and move to done-log | 2026-05-07 |
+| BKL-008 | Redesign DALI Protocol Analyzer frontend | P1 | done-ready | prudek | 2026-06-10 | Merge UI redesign PR and monitor CI | 2026-06-10 |
 
 ## Refinement Notes
 

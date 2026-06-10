@@ -2,7 +2,7 @@
 
 ## Product Overview
 
-`dali-analyzer` is a diagnostics tool for DALI/DALI-2 traffic inspection.
+`dali-analyzer` provides the DALI Protocol Analyzer, a diagnostics tool for DALI/DALI-2 traffic inspection.
 It ingests raw frame streams, classifies and decodes them in the backend, and exposes
 REST/SSE data for a browser UI.
 
@@ -16,6 +16,7 @@ Primary use cases:
 - inspect simulated sniffer logs without hardware
 - inspect live serial input from a connected sniffer
 - review decoded transactions and protocol semantics for troubleshooting
+- monitor compact frame tables, sticky filters, frame details, and frontend-derived bus activity previews
 
 DALI context:
 

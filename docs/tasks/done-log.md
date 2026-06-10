@@ -9,3 +9,4 @@ Chronological history of completed backlog items.
 | 2026-05-06 | BKL-003 | Test and module docs expanded with architecture flow | pending |
 | 2026-05-06 | BKL-005 | Auto-PR and CI supervision standard integrated in workflow docs | pending |
 | 2026-05-07 | BKL-007 | AGPLv3 licensing baseline + UI/runtime version visibility implemented | pending |
+| 2026-06-10 | BKL-008 | DALI Protocol Analyzer compact frontend redesign implemented | pending |

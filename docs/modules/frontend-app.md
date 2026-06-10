@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Provide the browser UI layer for interacting with backend diagnostics features.
+Provide the `DALI Protocol Analyzer` browser UI layer for interacting with backend diagnostics features.
 
 ## Entrypoint
 
@@ -10,10 +10,11 @@ Provide the browser UI layer for interacting with backend diagnostics features.
 
 ## Responsibilities
 
-- Display decoded frame traffic, transaction state, and semantic details.
+- Display decoded frame traffic, transaction state, and semantic details in a compact analyzer layout.
 - Switch between simulated-log and serial-source modes.
 - Manage serial session controls through backend APIs.
 - Render live updates from SSE with fallback behavior when needed.
+- Provide frontend-computed monitor metrics, sticky filters, dense frame inspection, a frame details panel, and preview Timeline/Analytics views from loaded frames.
 
 ## Interfaces Consumed
 
@@ -31,3 +32,4 @@ Provide the browser UI layer for interacting with backend diagnostics features.
 - React + TypeScript + Vite runtime.
 - Frontend does not decode DALI protocol payloads directly; backend remains single decoding authority.
 - Contract drift risk: any backend response-model changes require same-PR UI update and module-doc update.
+- Timeline and analytics cards currently derive from the loaded frame window; durable aggregate APIs are a future extension, not a current frontend dependency.

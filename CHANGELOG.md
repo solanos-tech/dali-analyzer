@@ -8,6 +8,13 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 
 ### Added
 
+- Added compact `DALI Protocol Analyzer` frontend redesign:
+  - sticky filter/search toolbar
+  - dense decoded frame table with correlation, semantic level, and latency columns
+  - sticky frame details panel
+  - frontend-derived bus activity mini timeline
+  - preview `Frames`, `Timeline`, and `Analytics` tabs
+- Added UI redesign source audit at `docs/ui-redesign-audit.md`.
 - Added AGPLv3 project licensing assets and metadata:
   - `LICENSE`
   - `LICENSE-FAQ.md`
@@ -19,6 +26,8 @@ The format is inspired by Keep a Changelog and Semantic Versioning.
 
 ### Changed
 
+- Renamed user-facing frontend product text from `DALI Decode Monitor` to `DALI Protocol Analyzer`.
+- Updated frontend module documentation for the compact analyzer layout and frontend-derived analytics previews.
 - Updated root `README.md` with a dedicated AGPLv3 `License` section.
 - Updated runtime package README with launcher diagnostics/version note.
 
